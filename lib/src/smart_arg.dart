@@ -117,22 +117,17 @@ class SmartArg {
     for (var i = 0; i < helpKeys.length; i++) {
       var keyDisplay = helpKeys[i].padRight(keyPadWidth);
 
-      if (keyDisplay.length == keyPadWidth) {
-        var thisHelpDescriptions = indent(
-            hardWrap(helpDescriptions[i].join('\n'), 78 - keyPadWidth),
-            keyPadWidth);
+      var thisHelpDescriptions = helpDescriptions[i].join('\n');
+      thisHelpDescriptions = hardWrap(thisHelpDescriptions, 78 - keyPadWidth);
+      thisHelpDescriptions = indent(thisHelpDescriptions, keyPadWidth);
 
+      if (keyDisplay.length == keyPadWidth) {
         thisHelpDescriptions =
             thisHelpDescriptions.replaceRange(0, keyPadWidth, keyDisplay);
-        lines.add(thisHelpDescriptions);
       } else {
-        final thisHelpDescriptions = helpDescriptions[i];
-
         lines.add(keyDisplay);
-        for (var j = 0; j < thisHelpDescriptions.length; j++) {
-          lines.add('$continuedLineHelpTextPadding${thisHelpDescriptions[j]}');
-        }
       }
+      lines.add(thisHelpDescriptions);
     }
 
     if (_app?.extendedHelp != null) {
