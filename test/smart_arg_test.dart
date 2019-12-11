@@ -194,9 +194,75 @@ void main() {
       expect(app, isNotNull);
     });
 
-    test('Parameter', () {
-      var param = StringArgument();
-      expect(param, isNotNull);
+    group('BooleanArgument', () {
+      test('emptyList', () {
+        var arg = BooleanArgument();
+        expect(arg.emptyList is List, true);
+
+        // Make sure we can add a bool type directly
+        arg.emptyList.add(true);
+      });
+
+      test('handleValue verbose', () {
+        var arg = BooleanArgument(long: 'verbose');
+        expect(arg.handleValue('verbose', null), true);
+      });
+
+      test('handleValue no-verbose', () {
+        var arg = BooleanArgument(long: 'verbose');
+        expect(arg.handleValue('no-verbose', null), false);
+      });
+
+      test('special keys with non-negate', () {
+        var args = BooleanArgument(short: 'v', long: 'verbose');
+        expect(args.specialKeys('v', 'verbose'), []);
+      });
+
+      test('special keys with negate', () {
+        var args =
+            BooleanArgument(short: 'v', long: 'verbose', isNegateable: true);
+        expect(args.specialKeys('v', 'verbose'), ['no-verbose']);
+      });
+    });
+
+    group('DirectoryArgument', () {
+      test('emptyList', () {
+        var arg = DirectoryArgument();
+        expect(arg.emptyList is List, true);
+
+        // Make sure we can add a Directory type directly
+        arg.emptyList.add(Directory('.'));
+      });
+
+      group('handleValue', () {
+        test('returns directory', () {
+          var arg = DirectoryArgument();
+          var value = arg.handleValue('dir', './lib');
+
+          expect(value.path, contains('/lib'));
+        });
+
+        group('must exist', () {
+          test('exists', () {
+            var arg = DirectoryArgument(mustExist: true);
+            var value = arg.handleValue('dir', './lib');
+
+            expect(value.path, contains('/lib'));
+          });
+
+          test('does not exists', () {
+            var arg = DirectoryArgument(mustExist: true);
+
+            try {
+              var _ = arg.handleValue('dir', './bad-directory-name');
+              fail(
+                  'directory does not exist, an exception should have been thrown');
+            } on ArgumentError {
+              expect(1, 1);
+            }
+          });
+        });
+      });
     });
   });
 

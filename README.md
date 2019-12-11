@@ -1,6 +1,9 @@
 Smart Arg
 =========
 
+[![Build Status](https://travis-ci.org/jcowgar/smart_arg.svg?branch=master)](https://travis-ci.org/jcowgar/smart_arg)
+[![codecov](https://codecov.io/gh/jcowgar/smart_arg/branch/master/graph/badge.svg)](https://codecov.io/gh/jcowgar/smart_arg)
+
 A simple to use command line argument parser. The main rationale behind this
 argument parser is the use of a class to store the argument values. Therefore,
 you gain static type checking and code completion.

@@ -1,5 +1,6 @@
 library smart_arg;
 
+export 'src/argument.dart';
 export 'src/boolean_argument.dart';
 export 'src/directory_argument.dart';
 export 'src/double_argument.dart';
