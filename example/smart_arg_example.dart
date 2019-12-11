@@ -8,7 +8,7 @@ import 'package:smart_arg/smart_arg.dart';
   maximumExtras: 1,
   exitOnFailure: true,
   extendedHelp: [
-    ExtendedHelp('SECTION 1', '''
+    ExtendedHelp('''
       This is a simple application that does nothing and contains silly arguments. It simply shows
       how the
       smart_arg library can be used.
@@ -17,8 +17,10 @@ import 'package:smart_arg/smart_arg.dart';
       program outside of those interested
       in using smart_arg in their own
       applications.'''),
-    ExtendedHelp('SECTION 2',
-        'This is more extended text that can be put into its own section.'),
+    ExtendedHelp(
+      'This is more extended text that can be put into its own section.',
+      header: 'SECTION 2',
+    ),
   ],
 )
 class Args extends SmartArg {

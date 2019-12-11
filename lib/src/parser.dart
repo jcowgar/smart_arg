@@ -1,9 +1,4 @@
-class ExtendedHelp {
-  final String sectionHeader;
-  final String sectionHelp;
-
-  const ExtendedHelp(this.sectionHeader, this.sectionHelp);
-}
+import 'extended_help.dart';
 
 /// Annotation to define [SmartArg] wide properties.
 class Parser {
@@ -13,6 +8,8 @@ class Parser {
   /// Additional text to be displayed at the bottom of the help output.
   ///
   /// This can be multiline.
+  ///
+  /// See also [ExtendedHelp].
   final List<ExtendedHelp> extendedHelp;
 
   /// Minimum number of extras that are required for your application.

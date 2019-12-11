@@ -140,18 +140,21 @@ class SmartArg {
     }
 
     if (_app?.extendedHelp != null) {
-      _app.extendedHelp.forEach((eh) {
-        lines.add(' ');
-        if (eh.sectionHeader.isNotEmpty) {
-          lines.add(eh.sectionHeader);
-          lines.add(' ');
+      for (final eh in _app.extendedHelp) {
+        if (eh.help == null) {
+          throw StateError('ExtendedHelp.help must be set');
         }
-        if (eh.sectionHelp.isNotEmpty) {
-          lines.add(indent(
-              hardWrap(eh.sectionHelp, lineWidth - lineIndent), lineIndent));
+
+        lines.add('');
+
+        if (eh.header != null) {
+          lines.add(hardWrap(eh.header, lineWidth));
+          lines.add(
+              indent(hardWrap(eh.help, lineWidth - lineIndent), lineIndent));
+        } else {
+          lines.add(hardWrap(eh.help, lineWidth));
         }
-      });
-      //lines.add(hardWrap(_app.extendedHelp, 78));
+      }
     }
 
     return lines.join('\n');
