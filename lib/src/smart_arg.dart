@@ -161,25 +161,44 @@ class SmartArg {
 
   final _eolRegex = RegExp(r'\r\n|[\r\n]');
 
+  bool _isStacked(String value) {
+    final isSingleDash = value.startsWith('-') && !value.startsWith('--');
+    final isLongerThanShort = value.length > 2;
+    final isAssignment = isLongerThanShort && value.substring(2, 3) == '=';
+
+    return isSingleDash && !isAssignment && isLongerThanShort;
+  }
+
   bool _parse(List<String> arguments) {
     final instanceMirror = reflect(this);
+    final List<String> expandedArguments = [];
+
+    for (final arg in arguments) {
+      if (_isStacked(arg)) {
+        final individualArgs = arg.split('').skip(1).map((v) => '-$v').toList();
+
+        expandedArguments.addAll(individualArgs);
+      } else {
+        expandedArguments.add(arg);
+      }
+    }
 
     int argumentIndex = 0;
-    while (argumentIndex < arguments.length) {
-      var argument = arguments[argumentIndex];
+    while (argumentIndex < expandedArguments.length) {
+      var argument = expandedArguments[argumentIndex];
       var originalArgument = argument;
 
       argumentIndex++;
 
       if (argument.toLowerCase() == _app.argumentTerminator?.toLowerCase()) {
-        _extras.addAll(arguments.skip(argumentIndex));
+        _extras.addAll(expandedArguments.skip(argumentIndex));
         return true;
       } else if (argument.startsWith('-') == false) {
         // Was not an argument, must be an extra
         _extras.add(argument);
 
         if (_app.allowTrailingArguments == false) {
-          _extras.addAll(arguments.skip(argumentIndex));
+          _extras.addAll(expandedArguments.skip(argumentIndex));
           return true;
         }
 
@@ -202,12 +221,12 @@ class SmartArg {
       }
 
       if (argumentConfiguration.argument.needsValue && !hasValueViaEqual) {
-        if (argumentIndex >= arguments.length) {
+        if (argumentIndex >= expandedArguments.length) {
           throw ArgumentError(
               '${argumentConfiguration.displayKey} expects a value but none was supplied.');
         }
 
-        value = arguments[argumentIndex];
+        value = expandedArguments[argumentIndex];
         argumentIndex++;
       }
 
@@ -265,7 +284,7 @@ class SmartArg {
       }
 
       if (argumentConfiguration.argument is HelpArgument) {
-        _extras.addAll(arguments.skip(argumentIndex));
+        _extras.addAll(expandedArguments.skip(argumentIndex));
 
         return false;
       }

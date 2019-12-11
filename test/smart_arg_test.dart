@@ -187,6 +187,21 @@ class TestAllowTrailingArguments extends SmartArg {
   String other;
 }
 
+@Parser(exitOnFailure: false)
+class TestStackedBooleanArguments extends SmartArg {
+  @BooleanArgument(short: 'a')
+  bool avalue;
+
+  @BooleanArgument(short: 'b')
+  bool bvalue;
+
+  @BooleanArgument(short: 'c')
+  bool cvalue;
+
+  @BooleanArgument(short: 'd')
+  bool dvalue;
+}
+
 void main() {
   group('annotations', () {
     test('Parser', () {
@@ -264,6 +279,45 @@ void main() {
         });
       });
     });
+
+    group('IntegerArgument', () {
+      group('handleValue', () {
+        test('simple value', () {
+          final arg = IntegerArgument();
+
+          expect(arg.handleValue('key', '300'), 300);
+        });
+
+        group('minimum/maximum', () {
+          test('in range', () {
+            final arg = IntegerArgument(minimum: 100, maximum: 500);
+            expect(arg.handleValue('key', '300'), 300);
+          });
+
+          test('too low', () {
+            try {
+              final arg = IntegerArgument(minimum: 100, maximum: 500);
+              final _ = arg.handleValue('key', '95');
+
+              fail('value lower than minimum should have thrown an exception');
+            } on ArgumentError {
+              expect(1, 1);
+            }
+          });
+
+          test('too high', () {
+            try {
+              final arg = IntegerArgument(minimum: 100, maximum: 500);
+              final _ = arg.handleValue('key', '505');
+
+              fail('value higher than maximum should have thrown an exception');
+            } on ArgumentError {
+              expect(1, 1);
+            }
+          });
+        });
+      });
+    });
   });
 
   group('argument parsing/assignment', () {
@@ -307,6 +361,14 @@ void main() {
       var args = TestSimple()..parse(['-i', '300', '--dvalue=10.0']);
 
       expect(args.ivalue, 300);
+    });
+
+    test('stacked boolean flags', () {
+      var args = TestStackedBooleanArguments()..parse(['-ab', '-c']);
+      expect(args.avalue, true);
+      expect(args.bvalue, true);
+      expect(args.cvalue, true);
+      expect(args.dvalue, null);
     });
 
     test('long key with equal', () {
