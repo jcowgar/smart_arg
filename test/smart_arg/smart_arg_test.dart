@@ -202,6 +202,18 @@ class TestStackedBooleanArguments extends SmartArg {
   bool dvalue;
 }
 
+@Parser(exitOnFailure: false)
+class TestNoKey extends SmartArg {
+  @StringArgument(long: false)
+  String long;
+}
+
+@Parser(exitOnFailure: false)
+class TestWithDefaultValue extends SmartArg {
+  @StringArgument()
+  String long = 'hello';
+}
+
 void main() {
   group('argument parsing/assignment', () {
     test('basic arguments', () {
@@ -261,6 +273,18 @@ void main() {
       expect(args.ivalue, 450);
       expect(args.dvalue, 55.5);
       expect(args.svalue, 'John');
+    });
+
+    group('default value', () {
+      test('default value exists if no argument given', () {
+        var args = TestWithDefaultValue()..parse([]);
+        expect(args.long, 'hello');
+      });
+
+      test('value supplied overrides default value', () {
+        var args = TestWithDefaultValue()..parse(['--long', 'goodbye']);
+        expect(args.long, 'goodbye');
+      });
     });
 
     group('list handling', () {
@@ -563,6 +587,15 @@ void main() {
         expect(args.usage().contains('-n'), true);
         expect(args.usage().contains('itemWithNoLong'), false);
         expect(args.usage().contains('item-with-no-long'), false);
+      });
+
+      test('some argument must exist', () {
+        try {
+          var _ = TestNoKey()..parse([]);
+          fail('no key at all should have thrown an exception');
+        } on StateError {
+          expect(1, 1);
+        }
       });
     });
 
