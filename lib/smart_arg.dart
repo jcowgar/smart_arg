@@ -1,8 +1,11 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 library smart_arg;
 
-export 'src/smart_arg_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/boolean_argument.dart';
+export 'src/directory_argument.dart';
+export 'src/double_argument.dart';
+export 'src/file_argument.dart';
+export 'src/help_argument.dart';
+export 'src/integer_argument.dart';
+export 'src/parser.dart';
+export 'src/smart_arg.dart';
+export 'src/string_argument.dart';
