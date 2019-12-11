@@ -25,9 +25,9 @@ void main() {
 
     test('hardWrap', () {
       expect(hardWrap('Hello Hello', 7), 'Hello\nHello');
-      // FAILING: expect(hardWrap('Hello Hello', 5), 'Hello\nHello');
       expect(hardWrap('Hello World how are you doing?', 14),
           'Hello World\nhow are you\ndoing?');
+      expect(hardWrap('0123456789', 5), '01234\n56789');
     });
 
     test('indent', () {
