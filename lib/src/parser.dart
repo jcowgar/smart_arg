@@ -1,3 +1,5 @@
+import 'extended_help.dart';
+
 /// Annotation to define [SmartArg] wide properties.
 class Parser {
   /// Application description that is displayed in the help output.
@@ -6,7 +8,9 @@ class Parser {
   /// Additional text to be displayed at the bottom of the help output.
   ///
   /// This can be multiline.
-  final String extendedHelp;
+  ///
+  /// See also [ExtendedHelp].
+  final List<ExtendedHelp> extendedHelp;
 
   /// Minimum number of extras that are required for your application.
   ///

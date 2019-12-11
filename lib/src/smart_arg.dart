@@ -108,16 +108,26 @@ class SmartArg {
       helpDescriptions.add(helpLines);
     }
 
-    const maxKeyLenAllowed = 20;
-    final maxKeyLen = helpKeys.fold<int>(0,
-        (a, b) => b.length > a && b.length < maxKeyLenAllowed ? b.length : a);
+    const lineWidth = 78;
+    const lineIndent = 2;
+    const maxKeyLenAllowed = 25; // Will include indent
+    final linePrefix = ' ' * lineIndent;
+
+    final maxKeyLen = helpKeys.fold<int>(
+        0,
+        (a, b) => (b.length + lineIndent) > a &&
+                (b.length + lineIndent) < maxKeyLenAllowed
+            ? (b.length + lineIndent)
+            : a);
     final keyPadWidth = min(maxKeyLenAllowed, maxKeyLen + 1);
 
     for (var i = 0; i < helpKeys.length; i++) {
-      var keyDisplay = helpKeys[i].padRight(keyPadWidth);
+      var keyDisplay =
+          linePrefix + helpKeys[i].padRight(keyPadWidth - lineIndent);
 
       var thisHelpDescriptions = helpDescriptions[i].join('\n');
-      thisHelpDescriptions = hardWrap(thisHelpDescriptions, 78 - keyPadWidth);
+      thisHelpDescriptions =
+          hardWrap(thisHelpDescriptions, lineWidth - keyPadWidth);
       thisHelpDescriptions = indent(thisHelpDescriptions, keyPadWidth);
 
       if (keyDisplay.length == keyPadWidth) {
@@ -130,8 +140,21 @@ class SmartArg {
     }
 
     if (_app?.extendedHelp != null) {
-      lines.add(' ');
-      lines.add(hardWrap(_app.extendedHelp, 78));
+      for (final eh in _app.extendedHelp) {
+        if (eh.help == null) {
+          throw StateError('ExtendedHelp.help must be set');
+        }
+
+        lines.add('');
+
+        if (eh.header != null) {
+          lines.add(hardWrap(eh.header, lineWidth));
+          lines.add(
+              indent(hardWrap(eh.help, lineWidth - lineIndent), lineIndent));
+        } else {
+          lines.add(hardWrap(eh.help, lineWidth));
+        }
+      }
     }
 
     return lines.join('\n');
