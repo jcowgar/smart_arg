@@ -8,11 +8,14 @@ import 'package:smart_arg/smart_arg.dart';
   maximumExtras: 1,
   exitOnFailure: true,
   extendedHelp: '''
-      This is a simple application that does nothing and contains silly
-      arguments. It simply shows how the smart_arg library can be used.
+      This is a simple application that does nothing and contains silly arguments. It simply shows
+      how the
+      smart_arg library can be used.
 
-      No one should really try to use this program outside of those interested
-      in using smart_arg in their own applications.''',
+      No one should really try to use this
+      program outside of those interested
+      in using smart_arg in their own
+      applications.''',
 )
 class Args extends SmartArg {
   @StringArgument()
@@ -36,13 +39,25 @@ class Args extends SmartArg {
   int count;
 
   @DoubleArgument(
-    help: 'Some other silly parameter to show double parsing',
+    help:
+        'Some other silly parameter to show double parsing. This also has a very long description that should word wrap in the output and produce beautiful display.',
   )
   double silly;
 
   @BooleanArgument(
     short: 'v',
-    help: 'Turn verbose mode on',
+    help: '''Turn verbose mode on.
+
+    This is an example also of using multi-line help text that is formatted
+    inside of the editor. This should be one paragraph. I'll add some more
+    content here. This will be the last sentence of the first paragraph.
+
+    This is another paragraph formatted very
+    narrowly in the code editor. Does it
+    look the same as the one above? I sure
+    hope that it does. It would make help
+    display very easy to implement.
+    ''',
     isNegateable: true,
   )
   bool verbose = false;

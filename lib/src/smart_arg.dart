@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:mirrors';
 
 import 'package:smart_arg/smart_arg.dart';
+import 'package:smart_arg/src/string_utils.dart';
 
 import 'argument.dart';
 import 'mirror_argument_pair.dart';
@@ -107,24 +108,23 @@ class SmartArg {
       helpDescriptions.add(helpLines);
     }
 
-    final maxKeyLenAllowed = 30;
+    const maxKeyLenAllowed = 20;
     final maxKeyLen = helpKeys.fold<int>(0,
         (a, b) => b.length > a && b.length < maxKeyLenAllowed ? b.length : a);
     final keyPadWidth = min(maxKeyLenAllowed, maxKeyLen + 1);
-    final continuedLineHelpTextPadding = ' '.padRight(keyPadWidth);
+    final continuedLineHelpTextPadding = ' ' * keyPadWidth;
 
     for (var i = 0; i < helpKeys.length; i++) {
       var keyDisplay = helpKeys[i].padRight(keyPadWidth);
 
       if (keyDisplay.length == keyPadWidth) {
-        final thisHelpDescriptions = helpDescriptions[i];
-        final firstHelpDisplay = thisHelpDescriptions.first;
+        var thisHelpDescriptions = indent(
+            hardWrap(helpDescriptions[i].join('\n'), 78 - keyPadWidth),
+            keyPadWidth);
 
-        lines.add('$keyDisplay$firstHelpDisplay');
-
-        for (var j = 1; j < thisHelpDescriptions.length; j++) {
-          lines.add('$continuedLineHelpTextPadding${thisHelpDescriptions[j]}');
-        }
+        thisHelpDescriptions =
+            thisHelpDescriptions.replaceRange(0, keyPadWidth, keyDisplay);
+        lines.add(thisHelpDescriptions);
       } else {
         final thisHelpDescriptions = helpDescriptions[i];
 
@@ -137,11 +137,7 @@ class SmartArg {
 
     if (_app?.extendedHelp != null) {
       lines.add(' ');
-      lines.addAll(_app.extendedHelp
-          .trim()
-          .split(_eolRegex)
-          .map((v) => v.trim())
-          .toList());
+      lines.add(hardWrap(_app.extendedHelp, 78));
     }
 
     return lines.join('\n');
@@ -169,19 +165,24 @@ class SmartArg {
     return isSingleDash && !isAssignment && isLongerThanShort;
   }
 
-  bool _parse(List<String> arguments) {
-    final instanceMirror = reflect(this);
-    final List<String> expandedArguments = [];
-
+  List<String> _rewriteArguments(List<String> arguments) {
+    List<String> result = [];
     for (final arg in arguments) {
       if (_isStacked(arg)) {
         final individualArgs = arg.split('').skip(1).map((v) => '-$v').toList();
 
-        expandedArguments.addAll(individualArgs);
+        result.addAll(individualArgs);
       } else {
-        expandedArguments.add(arg);
+        result.add(arg);
       }
     }
+
+    return result;
+  }
+
+  bool _parse(List<String> arguments) {
+    final instanceMirror = reflect(this);
+    final List<String> expandedArguments = _rewriteArguments(arguments);
 
     int argumentIndex = 0;
     while (argumentIndex < expandedArguments.length) {
