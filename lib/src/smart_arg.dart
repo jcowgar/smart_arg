@@ -120,7 +120,6 @@ class SmartArg {
             ? (b.length + lineIndent)
             : a);
     final keyPadWidth = min(maxKeyLenAllowed, maxKeyLen + 1);
-    final continuedLineHelpTextPadding = ' ' * keyPadWidth;
 
     for (var i = 0; i < helpKeys.length; i++) {
       var keyDisplay =
