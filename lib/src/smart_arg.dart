@@ -112,7 +112,6 @@ class SmartArg {
     final maxKeyLen = helpKeys.fold<int>(0,
         (a, b) => b.length > a && b.length < maxKeyLenAllowed ? b.length : a);
     final keyPadWidth = min(maxKeyLenAllowed, maxKeyLen + 1);
-    final continuedLineHelpTextPadding = ' ' * keyPadWidth;
 
     for (var i = 0; i < helpKeys.length; i++) {
       var keyDisplay = helpKeys[i].padRight(keyPadWidth);
@@ -149,8 +148,6 @@ class SmartArg {
 
   // tracked so we can have a proper order for help output
   List<MirrorParameterPair> _mirrorParameterPairs;
-
-  final _eolRegex = RegExp(r'\r\n|[\r\n]');
 
   bool _isStacked(String value) {
     final isSingleDash = value.startsWith('-') && !value.startsWith('--');
