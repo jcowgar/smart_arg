@@ -172,8 +172,6 @@ class SmartArg {
   // tracked so we can have a proper order for help output
   List<MirrorParameterPair> _mirrorParameterPairs;
 
-  final _eolRegex = RegExp(r'\r\n|[\r\n]');
-
   bool _isStacked(String value) {
     final isSingleDash = value.startsWith('-') && !value.startsWith('--');
     final isLongerThanShort = value.length > 2;

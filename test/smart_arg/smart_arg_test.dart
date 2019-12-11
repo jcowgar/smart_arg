@@ -7,7 +7,7 @@ import 'package:smart_arg/smart_arg.dart';
 @Parser(
     exitOnFailure: false,
     description: 'app-description',
-    extendedHelp: [ExtendedHelp('extended-help', 'This is some help')])
+    extendedHelp: [ExtendedHelp('This is some help', header: 'extended-help')])
 class TestSimple extends SmartArg {
   @BooleanArgument(isNegateable: true, help: 'bvalue-help')
   bool bvalue;
