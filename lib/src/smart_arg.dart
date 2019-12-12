@@ -2,12 +2,14 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:mirrors';
 
-import 'package:smart_arg/smart_arg.dart';
-import 'package:smart_arg/src/string_utils.dart';
-
 import 'argument.dart';
+import 'command.dart';
+import 'group.dart';
+import 'help_argument.dart';
 import 'mirror_argument_pair.dart';
 import 'parser.dart';
+import 'smart_arg_command.dart';
+import 'string_utils.dart';
 
 /// Base class for the [SmartArg] parser.
 ///
@@ -37,24 +39,34 @@ class SmartArg {
     _commands = {};
     _mirrorParameterPairs = [];
 
-    for (var mirror in instanceMirror.type.declarations.values
-        .where((p) => p is VariableMirror && p.isPrivate == false)) {
-      var parameter =
-          mirror.metadata.firstWhere((m) => m.reflectee is Argument)?.reflectee;
-      var mpp = MirrorParameterPair(mirror, parameter);
+    {
+      var currentGroup;
 
-      for (var key in mpp.keys(_app)) {
-        if (_values.containsKey(key)) {
-          throw StateError('$key was configured multiple times');
+      for (final mirror in instanceMirror.type.declarations.values
+          .where((p) => p is VariableMirror && p.isPrivate == false)) {
+        currentGroup = mirror.metadata
+                .firstWhere((m) => m.reflectee is Group, orElse: () => null)
+                ?.reflectee ??
+            currentGroup;
+
+        final parameter = mirror.metadata
+            .firstWhere((m) => m.reflectee is Argument)
+            ?.reflectee;
+        final mpp = MirrorParameterPair(mirror, parameter, currentGroup);
+
+        for (final key in mpp.keys(_app)) {
+          if (_values.containsKey(key)) {
+            throw StateError('$key was configured multiple times');
+          }
+
+          _values[key] = mpp;
         }
 
-        _values[key] = mpp;
-      }
+        _mirrorParameterPairs.add(mpp);
 
-      _mirrorParameterPairs.add(mpp);
-
-      if (parameter is Command) {
-        _commands[mpp.displayKey] = mpp;
+        if (parameter is Command) {
+          _commands[mpp.displayKey] = mpp;
+        }
       }
     }
   }
@@ -94,6 +106,7 @@ class SmartArg {
     }
 
     List<String> helpKeys = [];
+    List<Group> helpGroups = [];
     List<List<String>> helpDescriptions = [];
 
     final arguments =
@@ -106,6 +119,7 @@ class SmartArg {
 
         keys.addAll(mpp.keys(_app).map((v) => v.startsWith('-') ? v : '--$v'));
         helpKeys.add(keys.join(', '));
+        helpGroups.add(mpp.group);
 
         List<String> helpLines = [mpp.argument.help ?? 'no help available'];
 
@@ -119,7 +133,7 @@ class SmartArg {
       }
     }
 
-    const lineWidth = 78;
+    const lineWidth = 78; // TODO: Can we get this from the terminal?
     const lineIndent = 2;
     const maxKeyLenAllowed = 25; // Will include indent
     final linePrefix = ' ' * lineIndent;
@@ -132,22 +146,58 @@ class SmartArg {
             : a);
     final keyPadWidth = min(maxKeyLenAllowed, maxKeyLen + 1);
 
-    for (var i = 0; i < helpKeys.length; i++) {
-      var keyDisplay =
-          linePrefix + helpKeys[i].padRight(keyPadWidth - lineIndent);
+    {
+      final trailingHelp = (Group group) {
+        if (group?.afterHelp != null) {
+          lines.add('');
+          lines.add(indent(
+              hardWrap(group.afterHelp, lineWidth - lineIndent), lineIndent));
+        }
+      };
 
-      var thisHelpDescriptions = helpDescriptions[i].join('\n');
-      thisHelpDescriptions =
-          hardWrap(thisHelpDescriptions, lineWidth - keyPadWidth);
-      thisHelpDescriptions = indent(thisHelpDescriptions, keyPadWidth);
+      var currentGroup;
 
-      if (keyDisplay.length == keyPadWidth) {
+      for (var i = 0; i < helpKeys.length; i++) {
+        final thisGroup = helpGroups[i];
+
+        if (thisGroup != currentGroup) {
+          trailingHelp(currentGroup);
+
+          if (currentGroup != null) {
+            lines.add('');
+          }
+
+          lines.add(thisGroup.name);
+
+          if (thisGroup.beforeHelp != null) {
+            lines.add(indent(
+                hardWrap(thisGroup.beforeHelp, lineWidth - lineIndent),
+                lineIndent));
+            lines.add('');
+          }
+        }
+
+        var keyDisplay =
+            linePrefix + helpKeys[i].padRight(keyPadWidth - lineIndent);
+
+        var thisHelpDescriptions = helpDescriptions[i].join('\n');
         thisHelpDescriptions =
-            thisHelpDescriptions.replaceRange(0, keyPadWidth, keyDisplay);
-      } else {
-        lines.add(keyDisplay);
+            hardWrap(thisHelpDescriptions, lineWidth - keyPadWidth);
+        thisHelpDescriptions = indent(thisHelpDescriptions, keyPadWidth);
+
+        if (keyDisplay.length == keyPadWidth) {
+          thisHelpDescriptions =
+              thisHelpDescriptions.replaceRange(0, keyPadWidth, keyDisplay);
+        } else {
+          lines.add(keyDisplay);
+        }
+
+        lines.add(thisHelpDescriptions);
+
+        currentGroup = helpGroups[i] ?? currentGroup;
       }
-      lines.add(thisHelpDescriptions);
+
+      trailingHelp(currentGroup);
     }
 
     if (commands.isNotEmpty) {
@@ -169,7 +219,7 @@ class SmartArg {
     if (_app?.extendedHelp != null) {
       for (final eh in _app.extendedHelp) {
         if (eh.help == null) {
-          throw StateError('ExtendedHelp.help must be set');
+          throw StateError('Help.help must be set');
         }
 
         lines.add('');

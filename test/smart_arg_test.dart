@@ -6,6 +6,7 @@ import 'annotations/directory_argument_test.dart' as directory_argument_test;
 import 'annotations/double_argument_test.dart' as double_argument_test;
 import 'annotations/extended_help_test.dart' as extended_help_test;
 import 'annotations/file_argument_test.dart' as file_argument_test;
+import 'annotations/group_test.dart' as group_test;
 import 'annotations/help_argument_test.dart' as help_argument_test;
 import 'annotations/integer_argument_test.dart' as integer_argument_test;
 import 'annotations/parse_test.dart' as parse_test;
@@ -23,6 +24,7 @@ void main() {
   double_argument_test.main();
   extended_help_test.main();
   file_argument_test.main();
+  group_test.main();
   help_argument_test.main();
   integer_argument_test.main();
   parse_test.main();

@@ -24,6 +24,16 @@ import 'package:smart_arg/smart_arg.dart';
   ],
 )
 class Args extends SmartArg {
+  @Group(
+    name: 'Group 1',
+    beforeHelp: '''
+    This is some long text that explains this section in detail. Blah blah blah
+    blah blah blah blah blah. This will be wrapped as needed. Thus, it will
+    display beautifully in the console.
+  ''',
+    afterHelp:
+        'This is just a single sentence but even it will be wrapped if necessary',
+  )
   @StringArgument()
   List<String> names;
 
@@ -39,6 +49,11 @@ class Args extends SmartArg {
   )
   File filename;
 
+  @Group(
+    name: 'Group 2 -- OTHER',
+    beforeHelp: 'Help before',
+    afterHelp: 'Help after',
+  )
   @IntegerArgument(
     help: 'Count of times to say hello',
   )

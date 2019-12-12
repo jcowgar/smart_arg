@@ -1,6 +1,7 @@
 import 'dart:mirrors';
 
 import 'argument.dart';
+import 'group.dart';
 import 'parser.dart';
 
 // Convert `areYouAlive` to `are-you-alive`
@@ -19,9 +20,11 @@ String camelToDash(String value) {
 class MirrorParameterPair {
   final VariableMirror mirror;
   final Argument argument;
+  final Group group;
+
   String displayKey;
 
-  MirrorParameterPair(this.mirror, this.argument);
+  MirrorParameterPair(this.mirror, this.argument, [this.group]);
 
   List<String> keys(Parser parser) {
     List<String> result = [];

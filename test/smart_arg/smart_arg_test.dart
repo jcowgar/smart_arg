@@ -221,6 +221,24 @@ class TestWithDefaultValue extends SmartArg {
 @Parser(exitOnFailure: false, extendedHelp: [ExtendedHelp(null)])
 class TestBadExtendedHelp extends SmartArg {}
 
+@Parser(exitOnFailure: false, description: 'A unit test example')
+class TestArgumentGroups extends SmartArg {
+  @Group(
+    name: 'PERSONALIZATION',
+    beforeHelp: 'Before personalization arguments',
+    afterHelp: 'After personalization arguments',
+  )
+  @StringArgument(help: 'Name of person to say hello to')
+  String name;
+
+  @StringArgument(help: 'Greeting to use when greeting the person')
+  String greeting;
+
+  @Group(name: 'CONFIGURATION')
+  @IntegerArgument(help: 'How many times do you wish to greet the person?')
+  int count = 1;
+}
+
 void main() {
   group('argument parsing/assignment', () {
     test('basic arguments', () {
@@ -723,6 +741,16 @@ void main() {
       } on StateError {
         expect(1, 1);
       }
+    });
+
+    test('grouping works', () {
+      final args = TestArgumentGroups();
+      final help = args.usage();
+
+      expect(help, contains('PERSONALIZATION'));
+      expect(help, contains('  Before personalization arguments'));
+      expect(help, contains('  After personalization arguments'));
+      expect(help, contains('CONFIGURATION'));
     });
   });
 }
