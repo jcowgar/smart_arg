@@ -96,21 +96,27 @@ class SmartArg {
     List<String> helpKeys = [];
     List<List<String>> helpDescriptions = [];
 
-    for (var mpp in _mirrorParameterPairs) {
-      List<String> keys = [];
+    final arguments =
+        _mirrorParameterPairs.where((v) => v.argument is Command == false);
+    final commands = _mirrorParameterPairs.where((v) => v.argument is Command);
 
-      keys.addAll(mpp.keys(_app).map((v) => v.startsWith('-') ? v : '--$v'));
-      helpKeys.add(keys.join(', '));
+    if (arguments.isNotEmpty) {
+      for (var mpp in arguments) {
+        List<String> keys = [];
 
-      List<String> helpLines = [mpp.argument.help ?? 'no help available'];
+        keys.addAll(mpp.keys(_app).map((v) => v.startsWith('-') ? v : '--$v'));
+        helpKeys.add(keys.join(', '));
 
-      if (mpp.argument.isRequired ?? false) {
-        helpLines.add('[REQUIRED]');
+        List<String> helpLines = [mpp.argument.help ?? 'no help available'];
+
+        if (mpp.argument.isRequired ?? false) {
+          helpLines.add('[REQUIRED]');
+        }
+
+        helpLines.addAll(mpp.argument.additionalHelpLines);
+
+        helpDescriptions.add(helpLines);
       }
-
-      helpLines.addAll(mpp.argument.additionalHelpLines);
-
-      helpDescriptions.add(helpLines);
     }
 
     const lineWidth = 78;
@@ -142,6 +148,22 @@ class SmartArg {
         lines.add(keyDisplay);
       }
       lines.add(thisHelpDescriptions);
+    }
+
+    if (commands.isNotEmpty) {
+      lines.add('');
+      lines.add('COMMANDS');
+
+      final maxCommandLength =
+          commands.fold(0, (int a, b) => max(a, b.displayKey.length));
+
+      for (var mpp in commands) {
+        final key = mpp.displayKey.padRight(maxCommandLength + 1);
+        final help = mpp.argument.help ?? '';
+        final displayString = '$key $help';
+
+        lines.add(indent(hardWrap(displayString, lineWidth), 2));
+      }
     }
 
     if (_app?.extendedHelp != null) {

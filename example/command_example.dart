@@ -1,12 +1,22 @@
+import 'dart:io';
+
 import 'package:smart_arg/smart_arg.dart';
 
-@Parser()
+@Parser(description: 'get file from remote server')
 class GetCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed after downloaded?')
   bool removeAfterGet;
 
+  @HelpArgument()
+  bool help;
+
   @override
   void execute(SmartArg parentArguments) {
+    if (help == true) {
+      print(usage());
+      exit(0);
+    }
+
     if ((parentArguments as Args).verbose == true) {
       print('Verbose is on');
     } else {
@@ -21,13 +31,21 @@ class GetCommand extends SmartArgCommand {
   }
 }
 
-@Parser()
+@Parser(description: 'put file onto remote server')
 class PutCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed locally after downloaded?')
   bool removeAfterPut;
 
+  @HelpArgument()
+  bool help;
+
   @override
   void execute(SmartArg parentArguments) {
+    if (help == true) {
+      print(usage());
+      exit(0);
+    }
+
     if ((parentArguments as Args).verbose == true) {
       print('Verbose is on');
     } else {
@@ -42,7 +60,13 @@ class PutCommand extends SmartArgCommand {
   }
 }
 
-@Parser(description: 'Example using commands')
+@Parser(
+  description: 'Example using commands',
+  extendedHelp: [
+    ExtendedHelp('This is some text below the command listing',
+        header: 'EXTENDED HELP')
+  ],
+)
 class Args extends SmartArg {
   @BooleanArgument(short: 'v', help: 'Verbose mode')
   bool verbose;
@@ -52,8 +76,16 @@ class Args extends SmartArg {
 
   @Command(help: 'Put a file on the remote server')
   PutCommand put;
+
+  @HelpArgument()
+  bool help;
 }
 
 void main(List<String> arguments) {
-  Args()..parse(arguments);
+  var args = Args()..parse(arguments);
+
+  if (args.help == true) {
+    print(args.usage());
+    exit(0);
+  }
 }
