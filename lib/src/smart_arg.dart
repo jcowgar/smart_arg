@@ -34,6 +34,7 @@ class SmartArg {
     // Build an easy to use lookup for arguments on the command line
     // to their cooresponding Parameter configurations.
     _values = {};
+    _commands = {};
     _mirrorParameterPairs = [];
 
     for (var mirror in instanceMirror.type.declarations.values
@@ -51,6 +52,10 @@ class SmartArg {
       }
 
       _mirrorParameterPairs.add(mpp);
+
+      if (parameter is Command) {
+        _commands[mpp.displayKey] = mpp;
+      }
     }
   }
 
@@ -91,21 +96,27 @@ class SmartArg {
     List<String> helpKeys = [];
     List<List<String>> helpDescriptions = [];
 
-    for (var mpp in _mirrorParameterPairs) {
-      List<String> keys = [];
+    final arguments =
+        _mirrorParameterPairs.where((v) => v.argument is Command == false);
+    final commands = _mirrorParameterPairs.where((v) => v.argument is Command);
 
-      keys.addAll(mpp.keys(_app).map((v) => v.startsWith('-') ? v : '--$v'));
-      helpKeys.add(keys.join(', '));
+    if (arguments.isNotEmpty) {
+      for (var mpp in arguments) {
+        List<String> keys = [];
 
-      List<String> helpLines = [mpp.argument.help ?? 'no help available'];
+        keys.addAll(mpp.keys(_app).map((v) => v.startsWith('-') ? v : '--$v'));
+        helpKeys.add(keys.join(', '));
 
-      if (mpp.argument.isRequired ?? false) {
-        helpLines.add('[REQUIRED]');
+        List<String> helpLines = [mpp.argument.help ?? 'no help available'];
+
+        if (mpp.argument.isRequired ?? false) {
+          helpLines.add('[REQUIRED]');
+        }
+
+        helpLines.addAll(mpp.argument.additionalHelpLines);
+
+        helpDescriptions.add(helpLines);
       }
-
-      helpLines.addAll(mpp.argument.additionalHelpLines);
-
-      helpDescriptions.add(helpLines);
     }
 
     const lineWidth = 78;
@@ -139,6 +150,22 @@ class SmartArg {
       lines.add(thisHelpDescriptions);
     }
 
+    if (commands.isNotEmpty) {
+      lines.add('');
+      lines.add('COMMANDS');
+
+      final maxCommandLength =
+          commands.fold(0, (int a, b) => max(a, b.displayKey.length));
+
+      for (var mpp in commands) {
+        final key = mpp.displayKey.padRight(maxCommandLength + 1);
+        final help = mpp.argument.help ?? '';
+        final displayString = '$key $help';
+
+        lines.add(indent(hardWrap(displayString, lineWidth), 2));
+      }
+    }
+
     if (_app?.extendedHelp != null) {
       for (final eh in _app.extendedHelp) {
         if (eh.help == null) {
@@ -166,6 +193,7 @@ class SmartArg {
 
   Parser _app;
   Map<String, MirrorParameterPair> _values;
+  Map<String, MirrorParameterPair> _commands;
   List<String> _extras;
   Set<String> _wasSet;
 
@@ -210,15 +238,24 @@ class SmartArg {
         _extras.addAll(expandedArguments.skip(argumentIndex));
         return true;
       } else if (argument.startsWith('-') == false) {
-        // Was not an argument, must be an extra
-        _extras.add(argument);
+        if (_commands.containsKey(argument)) {
+          final command = _commands[argument];
+          final commandArguments = arguments.skip(argumentIndex).toList();
 
-        if (_app.allowTrailingArguments == false) {
-          _extras.addAll(expandedArguments.skip(argumentIndex));
+          _launchCommand(command, commandArguments);
+
           return true;
-        }
+        } else {
+          // Was not an argument, must be an extra
+          _extras.add(argument);
 
-        continue;
+          if (_app.allowTrailingArguments == false) {
+            _extras.addAll(expandedArguments.skip(argumentIndex));
+            return true;
+          }
+
+          continue;
+        }
       }
 
       var argumentParts = argument.split('=');
@@ -332,6 +369,15 @@ class SmartArg {
       throw ArgumentError(
           'expecting at most ${_app.maximumExtras} free form arguments but ${extras.length} was supplied');
     }
+  }
+
+  void _launchCommand(MirrorParameterPair commandMpp, List<String> arguments) {
+    final a = commandMpp.mirror;
+    final b = a.type as ClassMirror;
+    final command = b.newInstance(Symbol(''), []).reflectee as SmartArgCommand;
+
+    command.parse(arguments);
+    command.execute(this);
   }
 
   void _resetParser() {

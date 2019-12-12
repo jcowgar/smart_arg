@@ -5,9 +5,13 @@ import 'package:test/test.dart';
 import 'package:smart_arg/smart_arg.dart';
 
 @Parser(
-    exitOnFailure: false,
-    description: 'app-description',
-    extendedHelp: [ExtendedHelp('This is some help', header: 'extended-help')])
+  exitOnFailure: false,
+  description: 'app-description',
+  extendedHelp: [
+    ExtendedHelp('This is some help', header: 'extended-help'),
+    ExtendedHelp('Non-indented help'),
+  ],
+)
 class TestSimple extends SmartArg {
   @BooleanArgument(isNegateable: true, help: 'bvalue-help')
   bool bvalue;
@@ -214,10 +218,13 @@ class TestWithDefaultValue extends SmartArg {
   String long = 'hello';
 }
 
+@Parser(exitOnFailure: false, extendedHelp: [ExtendedHelp(null)])
+class TestBadExtendedHelp extends SmartArg {}
+
 void main() {
   group('argument parsing/assignment', () {
     test('basic arguments', () {
-      var args = TestSimple()
+      final args = TestSimple()
         ..parse([
           '--bvalue',
           '--ivalue',
@@ -247,19 +254,19 @@ void main() {
     });
 
     test('--no-bvalue', () {
-      var args = TestSimple()..parse(['--no-bvalue', '--dvalue=10.0']);
+      final args = TestSimple()..parse(['--no-bvalue', '--dvalue=10.0']);
 
       expect(args.bvalue, false);
     });
 
     test('short key', () {
-      var args = TestSimple()..parse(['-i', '300', '--dvalue=10.0']);
+      final args = TestSimple()..parse(['-i', '300', '--dvalue=10.0']);
 
       expect(args.ivalue, 300);
     });
 
     test('stacked boolean flags', () {
-      var args = TestStackedBooleanArguments()..parse(['-ab', '-c']);
+      final args = TestStackedBooleanArguments()..parse(['-ab', '-c']);
       expect(args.avalue, true);
       expect(args.bvalue, true);
       expect(args.cvalue, true);
@@ -267,7 +274,7 @@ void main() {
     });
 
     test('long key with equal', () {
-      var args = TestSimple()
+      final args = TestSimple()
         ..parse(['--ivalue=450', '--dvalue=55.5', '--svalue=John']);
 
       expect(args.ivalue, 450);
@@ -277,19 +284,19 @@ void main() {
 
     group('default value', () {
       test('default value exists if no argument given', () {
-        var args = TestWithDefaultValue()..parse([]);
+        final args = TestWithDefaultValue()..parse([]);
         expect(args.long, 'hello');
       });
 
       test('value supplied overrides default value', () {
-        var args = TestWithDefaultValue()..parse(['--long', 'goodbye']);
+        final args = TestWithDefaultValue()..parse(['--long', 'goodbye']);
         expect(args.long, 'goodbye');
       });
     });
 
     group('list handling', () {
       test('allow', () {
-        var args = TestMultiple()..parse(['--names=John', '--names', 'Jack']);
+        final args = TestMultiple()..parse(['--names=John', '--names', 'Jack']);
         expect(args.names[0], 'John');
         expect(args.names[1], 'Jack');
       });
@@ -344,7 +351,7 @@ void main() {
 
     group('must be one of', () {
       test('works', () {
-        var args = TestMustBeOneOf()..parse(['--greeting=hello']);
+        final args = TestMustBeOneOf()..parse(['--greeting=hello']);
         expect(args.greeting, 'hello');
       });
 
@@ -416,7 +423,7 @@ void main() {
     });
 
     test('enough extras', () {
-      var args = TestMinimumMaximumExtras()..parse(['extra1']);
+      final args = TestMinimumMaximumExtras()..parse(['extra1']);
       expect(args.extras.length, 1);
     });
 
@@ -432,7 +439,7 @@ void main() {
 
     group('trailing arguments', () {
       test('by default allows', () {
-        var args = TestAllowTrailingArguments()
+        final args = TestAllowTrailingArguments()
           ..parse(['--name=John', 'hello.txt', '--other=Jack']);
         expect(args.name, 'John');
         expect(args.other, 'Jack');
@@ -441,7 +448,7 @@ void main() {
       });
 
       test('when turned off trailing arguments become extras', () {
-        var args = TestDisallowTrailingArguments()
+        final args = TestDisallowTrailingArguments()
           ..parse(['--name=John', 'hello.txt', '--other=Jack']);
         expect(args.name, 'John');
         expect(args.other, null);
@@ -463,7 +470,7 @@ void main() {
       });
 
       test('file that exists', () {
-        var args = TestFileDirectoryMustExist()
+        final args = TestFileDirectoryMustExist()
           ..parse(['--file=./pubspec.yaml']);
         expect(args.file.path, contains('pubspec.yaml'));
       });
@@ -471,7 +478,7 @@ void main() {
 
     group('argumentTerminator', () {
       test('default', () {
-        var args = TestArgumentTerminatorDefault()
+        final args = TestArgumentTerminatorDefault()
           ..parse(['--name=John', '--', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, null);
@@ -492,7 +499,7 @@ void main() {
       });
 
       test('null terminator without use', () {
-        var args = TestArgumentTerminatorDefault()
+        final args = TestArgumentTerminatorDefault()
           ..parse(['--name=John', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, 'Jack');
@@ -501,7 +508,7 @@ void main() {
       });
 
       test('set to --args', () {
-        var args = TestArgumentTerminatorSet()
+        final args = TestArgumentTerminatorSet()
           ..parse(['--name=John', '--args', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, null);
@@ -511,7 +518,7 @@ void main() {
       });
 
       test('set to --args but using mixed case for argument terminator', () {
-        var args = TestArgumentTerminatorSet()
+        final args = TestArgumentTerminatorSet()
           ..parse(['--name=John', '--ArGS', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, null);
@@ -521,7 +528,7 @@ void main() {
       });
 
       test('set to --args but not used', () {
-        var args = TestArgumentTerminatorSet()
+        final args = TestArgumentTerminatorSet()
           ..parse(['--name=John', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, 'Jack');
@@ -549,7 +556,7 @@ void main() {
     });
 
     test('short and long parameters with the same name', () {
-      var args = TestShortAndLongSameKey()..parse(['-a=5', '--a=10']);
+      final args = TestShortAndLongSameKey()..parse(['-a=5', '--a=10']);
       expect(args.abc, 5);
       expect(args.a, 10);
     });
@@ -565,25 +572,25 @@ void main() {
       });
 
       test('short option for non-long option works', () {
-        var args = TestParserStrict()..parse(['-n=12']);
+        final args = TestParserStrict()..parse(['-n=12']);
         expect(args.nono, 12);
       });
 
       test('long option added works', () {
-        var args = TestParserStrict()..parse(['--say-hello']);
+        final args = TestParserStrict()..parse(['--say-hello']);
         expect(args.shouldSayHello, true);
       });
     });
 
     group('long argument override', () {
       test('long item can be overridden', () {
-        var args = TestLongKeyHandling()..parse([]);
+        final args = TestLongKeyHandling()..parse([]);
         expect(args.usage().contains('over-ride-long-item-name'), true);
         expect(args.usage().contains('longItem'), false);
       });
 
       test('long item does not display', () {
-        var args = TestLongKeyHandling()..parse([]);
+        final args = TestLongKeyHandling()..parse([]);
         expect(args.usage().contains('-n'), true);
         expect(args.usage().contains('itemWithNoLong'), false);
         expect(args.usage().contains('item-with-no-long'), false);
@@ -611,7 +618,7 @@ void main() {
       });
 
       test('directory that exists', () {
-        var args = TestFileDirectoryMustExist()..parse(['--directory=./lib']);
+        final args = TestFileDirectoryMustExist()..parse(['--directory=./lib']);
         expect(args.directory.path, contains('lib'));
       });
     });
@@ -639,68 +646,83 @@ void main() {
 
   group('help generation', () {
     test('help contains app description', () {
-      var args = TestSimple()..parse(['--dvalue=10.0']);
+      final args = TestSimple()..parse(['--dvalue=10.0']);
       expect(args.usage(), contains('app-description'));
     });
 
     test('help contains extended help', () {
-      var args = TestSimple()..parse(['--dvalue=10.0']);
-      expect(args.usage(), contains('extended-help'));
+      final args = TestSimple()..parse(['--dvalue=10.0']);
+      final usage = args.usage();
+
+      expect(usage, contains('extended-help'));
+      expect(usage, contains('  This is some help'));
+      expect(usage, contains('Non-indented help'));
     });
 
     test('help contains short key for ivalue', () {
-      var args = TestSimple()..parse(['--dvalue=10.0']);
+      final args = TestSimple()..parse(['--dvalue=10.0']);
       expect(args.usage(), contains('-i,'));
     });
 
     test('help contains long key for ivalue', () {
-      var args = TestSimple()..parse(['--dvalue=10.0']);
+      final args = TestSimple()..parse(['--dvalue=10.0']);
       expect(args.usage(), contains('--ivalue'));
     });
 
     test('help contains [REQUIRED] for --dvalue', () {
-      var args = TestSimple()..parse(['--dvalue=10.0']);
+      final args = TestSimple()..parse(['--dvalue=10.0']);
       expect(args.usage(), contains('[REQUIRED]'));
     });
 
     test('help contains must be one of', () {
-      var args = TestMustBeOneOf();
+      final args = TestMustBeOneOf();
       expect(args.usage(), contains('must be one of'));
     });
 
     test('help contains dashed long key for checkingCamelToDash', () {
-      var args = TestSimple()..parse(['--dvalue=10.0']);
+      final args = TestSimple()..parse(['--dvalue=10.0']);
       expect(args.usage(), contains('--checking-camel-to-dash'));
     });
 
     test('parameter wrapping', () {
-      var args = TestMultipleLineArgumentHelp()..parse(['-a=1']);
+      final args = TestMultipleLineArgumentHelp()..parse(['-a=1']);
       expect(args.usage(), matches(RegExp(r'.*\n\s+Silly help message')));
       expect(args.usage(), matches(RegExp(r'.*\n\s+\[REQUIRED\]')));
     });
 
     test('help works with -?', () {
-      var args = TestHelpArgument()..parse(['-?']);
+      final args = TestHelpArgument()..parse(['-?']);
       expect(args.help, true);
     });
 
     test('help works with -h', () {
-      var args = TestHelpArgument()..parse(['-h']);
+      final args = TestHelpArgument()..parse(['-h']);
       expect(args.help, true);
     });
 
     test('help works with --help', () {
-      var args = TestHelpArgument()..parse(['--help']);
+      final args = TestHelpArgument()..parse(['--help']);
       expect(args.help, true);
     });
 
     test('help ignores parameters after help flag', () {
-      var args = TestHelpArgument()
+      final args = TestHelpArgument()
         ..parse(['-?', '--bad-argument1', '-b', 'hello']);
       expect(args.help, true);
       expect(args.extras.contains('--bad-argument1'), true);
       expect(args.extras.contains('-b'), true);
       expect(args.extras.contains('hello'), true);
+    });
+
+    test('extended help with null throws an error', () {
+      try {
+        final args = TestBadExtendedHelp();
+        args.usage();
+
+        fail('with no extended help it should have thrown an exception');
+      } on StateError {
+        expect(1, 1);
+      }
     });
   });
 }
