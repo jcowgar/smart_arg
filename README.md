@@ -24,35 +24,211 @@ and more.
 Beautiful help is of course generated automatically when the user gives an
 incorrect parameter or misses a required parameter or extra.
 
-## Usage
-
-A simple example:
+## Simple Example
 
 ```dart
+import 'dart:io';
+
 import 'package:smart_arg/smart_arg.dart';
 
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
-  @StringParameter(help: 'Name of person to say hello to')
-  String name = 'World';
+  @StringArgument(help: 'Name of person to say hello to')
+  String name = 'World';    // Default to World
 
-  @StringParameter(help: 'Greeting text to use')
-  String greeting = 'Hello';
+  @StringArgument(
+    help: 'Greeting text to use',
+    mustBeOneOf: ['Hello', 'Goodbye'],
+  )
+  String greeting = 'Hello'; // Default to Hello
 
-  @IntegerParameter(
+  @IntegerArgument(
     help: 'Number of times to greet the person',
     isRequired: true,
     minimum: 1,
     maximum: 100,
   )
   int count;
+
+  @HelpArgument()
+  bool help = false;
 }
 
-main(List<String> arguments) {
+void main(List<String> arguments) {
   var args = Args()..parse(arguments);
+  if (args.help) {
+    print(args.usage());
+    exit(0);
+  }
 
   for (int i = 0; i < args.count; i++) {
     print('${args.greeting}, ${args.name}!');
+  }
+}
+```
+
+Please see the API documentation for a better understanding of what `Argument` types exist as well as their individual options.
+
+## Help Output
+
+The help output of the above example is:
+
+```
+Hello World application
+
+  --name         Name of person to say hello to
+  --greeting     Greeting text to use
+                 must be one of Hello, Goodbye
+  --count        Number of times to greet the person
+                 [REQUIRED]
+  -h, --help, -? Show help
+```
+
+A more complex example [smart_arg_example.dart][smart_arg_example.dart]
+produces the following output:
+
+```
+Example smart arg application
+
+Group 1
+  This is some long text that explains this section in detail. Blah blah blah
+  blah blah blah blah blah. This will be wrapped as needed. Thus, it will
+  display beautifully in the console.
+
+  --names        no help available
+  -r, --header   Report header text
+  --filename     Filename to report stats on
+
+  This is just a single sentence but even it will be wrapped if necessary
+
+Group 2 -- OTHER
+  Help before
+
+  --count        Count of times to say hello
+  --silly        Some other silly parameter to show double parsing. This also
+                 has a very long description that should word wrap in the
+                 output and produce beautiful display.
+  -v, --verbose, --no-verbose
+                 Turn verbose mode on.
+
+                 This is an example also of using multi-line help text that
+                 is formatted inside of the editor. This should be one
+                 paragraph. I'll add some more content here. This will be the
+                 last sentence of the first paragraph.
+
+                 This is another paragraph formatted very narrowly in the
+                 code editor. Does it look the same as the one above? I sure
+                 hope that it does. It would make help display very easy to
+                 implement.
+  -h, --help, -? Show help
+
+  Help after
+
+This is a simple application that does nothing and contains silly arguments.
+It simply shows how the smart_arg library can be used.
+
+No one should really try to use this program outside of those interested in
+using smart_arg in their own applications.
+
+SECTION 2
+  This is more extended text that can be put into its own section.
+```
+
+## Command Execution
+
+More complex command line applications often times have commands. These commands
+then also have options of their own. `SmartArg` accomplishes this very easily:
+
+```dart
+import 'dart:io';
+
+import 'package:smart_arg/smart_arg.dart';
+
+@Parser(description: 'get file from remote server')
+class GetCommand extends SmartArgCommand {
+  @BooleanArgument(help: 'Should the file be removed after downloaded?')
+  bool removeAfterGet;
+
+  @HelpArgument()
+  bool help;
+
+  @override
+  void execute(SmartArg parentArguments) {
+    if (help == true) {
+      print(usage());
+      exit(0);
+    }
+
+    if ((parentArguments as Args).verbose == true) {
+      print('Verbose is on');
+    } else {
+      print('Verbose is off');
+    }
+
+    print('Getting file...');
+
+    if (removeAfterGet == true) {
+      print('Removing file on remote server (not really)');
+    }
+  }
+}
+
+@Parser(description: 'put file onto remote server')
+class PutCommand extends SmartArgCommand {
+  @BooleanArgument(help: 'Should the file be removed locally after downloaded?')
+  bool removeAfterPut;
+
+  @HelpArgument()
+  bool help;
+
+  @override
+  void execute(SmartArg parentArguments) {
+    if (help == true) {
+      print(usage());
+      exit(0);
+    }
+
+    if ((parentArguments as Args).verbose == true) {
+      print('Verbose is on');
+    } else {
+      print('Verbose is off');
+    }
+
+    print('Putting file...');
+
+    if (removeAfterPut == true) {
+      print('Removing file on local disk (not really)');
+    }
+  }
+}
+
+@Parser(
+  description: 'Example using commands',
+  extendedHelp: [
+    ExtendedHelp('This is some text below the command listing',
+        header: 'EXTENDED HELP')
+  ],
+)
+class Args extends SmartArg {
+  @BooleanArgument(short: 'v', help: 'Verbose mode')
+  bool verbose;
+
+  @Command(help: 'Get a file from the remote server')
+  GetCommand get;
+
+  @Command(help: 'Put a file on the remote server')
+  PutCommand put;
+
+  @HelpArgument()
+  bool help;
+}
+
+void main(List<String> arguments) {
+  var args = Args()..parse(arguments);
+
+  if (args.help == true) {
+    print(args.usage());
+    exit(0);
   }
 }
 ```
@@ -62,12 +238,5 @@ main(List<String> arguments) {
 Please send pull requests, feature requests and bug reports to the
 [issue tracker][tracker].
 
-## What is yet to come?
-
-1. The library is in its infancy and the structure/naming may change.
-2. Commands, or sub applications with their own arguments and automatic
-   dispatching.
-3. Better adherance to standard option parsing practices, such as short
-   flag parameters being able to be stacked (`-vgc`).
-
 [tracker]: https://github.com/jcowgar/smart_arg
+[smart_arg_example.dart]: https://github.com/jcowgar/smart_arg/blob/master/example/smart_arg_example.dart
