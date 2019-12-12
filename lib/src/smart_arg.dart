@@ -34,6 +34,7 @@ class SmartArg {
     // Build an easy to use lookup for arguments on the command line
     // to their cooresponding Parameter configurations.
     _values = {};
+    _commands = {};
     _mirrorParameterPairs = [];
 
     for (var mirror in instanceMirror.type.declarations.values
@@ -51,6 +52,10 @@ class SmartArg {
       }
 
       _mirrorParameterPairs.add(mpp);
+
+      if (parameter is Command) {
+        _commands[mpp.displayKey] = mpp;
+      }
     }
   }
 
@@ -166,6 +171,7 @@ class SmartArg {
 
   Parser _app;
   Map<String, MirrorParameterPair> _values;
+  Map<String, MirrorParameterPair> _commands;
   List<String> _extras;
   Set<String> _wasSet;
 
@@ -210,15 +216,24 @@ class SmartArg {
         _extras.addAll(expandedArguments.skip(argumentIndex));
         return true;
       } else if (argument.startsWith('-') == false) {
-        // Was not an argument, must be an extra
-        _extras.add(argument);
+        if (_commands.containsKey(argument)) {
+          final command = _commands[argument];
+          final commandArguments = arguments.skip(argumentIndex).toList();
 
-        if (_app.allowTrailingArguments == false) {
-          _extras.addAll(expandedArguments.skip(argumentIndex));
+          _launchCommand(command, commandArguments);
+
           return true;
-        }
+        } else {
+          // Was not an argument, must be an extra
+          _extras.add(argument);
 
-        continue;
+          if (_app.allowTrailingArguments == false) {
+            _extras.addAll(expandedArguments.skip(argumentIndex));
+            return true;
+          }
+
+          continue;
+        }
       }
 
       var argumentParts = argument.split('=');
@@ -332,6 +347,15 @@ class SmartArg {
       throw ArgumentError(
           'expecting at most ${_app.maximumExtras} free form arguments but ${extras.length} was supplied');
     }
+  }
+
+  void _launchCommand(MirrorParameterPair commandMpp, List<String> arguments) {
+    final a = commandMpp.mirror;
+    final b = a.type as ClassMirror;
+    final command = b.newInstance(Symbol(''), []).reflectee as SmartArgCommand;
+
+    command.parse(arguments);
+    command.execute(this);
   }
 
   void _resetParser() {

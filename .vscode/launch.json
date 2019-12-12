@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Dart",
+      "name": "Example",
       "program": "example/smart_arg_example.dart",
       "args": [
         "-r",
@@ -19,6 +19,20 @@
         "example/smart_arg_example.dart",
         "hello"
       ],
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Command Example",
+      "program": "example/command_example.dart",
+      "args": ["put", "--remove-after-put"],
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Hello",
+      "program": "example/hello.dart",
+      "args": [],
       "request": "launch",
       "type": "dart"
     }
