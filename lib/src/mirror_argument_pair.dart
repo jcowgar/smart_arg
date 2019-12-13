@@ -1,4 +1,4 @@
-import 'dart:mirrors';
+import 'package:reflectable/mirrors.dart';
 
 import 'argument.dart';
 import 'group.dart';
@@ -39,7 +39,7 @@ class MirrorParameterPair {
     }
 
     if (argument.long == null && parser.strict != true) {
-      long = camelToDash(MirrorSystem.getName(mirror.simpleName));
+      long = camelToDash(mirror.simpleName);
 
       result.add(long);
     } else if (argument.long is String) {
@@ -53,8 +53,7 @@ class MirrorParameterPair {
     displayKey = long is String ? long : short;
 
     if (displayKey == null) {
-      throw StateError(
-          'No key could be found for ${MirrorSystem.getName(mirror.simpleName)}');
+      throw StateError('No key could be found for ${mirror.simpleName})');
     } else if (short?.startsWith('-') ?? false) {
       throw StateError(
           'Short key ($short) defined by short: should not include a leading -');

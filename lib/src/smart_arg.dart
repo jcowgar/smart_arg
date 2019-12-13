@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:mirrors';
 
+import 'package:reflectable/reflectable.dart';
+
 import 'argument.dart';
 import 'command.dart';
 import 'group.dart';
@@ -10,6 +12,18 @@ import 'mirror_argument_pair.dart';
 import 'parser.dart';
 import 'smart_arg_command.dart';
 import 'string_utils.dart';
+
+class Reflector extends Reflectable {
+  const Reflector()
+      : super(
+          invokingCapability,
+          declarationsCapability,
+          instanceInvokeCapability,
+          metadataCapability,
+        );
+}
+
+const reflector = const Reflector();
 
 /// Base class for the [SmartArg] parser.
 ///
@@ -26,12 +40,10 @@ class SmartArg {
   List<String> get extras => _extras;
 
   SmartArg() {
-    final instanceMirror = reflect(this);
+    final instanceMirror = reflector.reflect(this);
 
     // Find our app meta data (if any)
-    _app = instanceMirror.type.metadata
-        .firstWhere((m) => m.reflectee is Parser)
-        ?.reflectee;
+    _app = instanceMirror.type.metadata.firstWhere((m) => m is Parser);
 
     // Build an easy to use lookup for arguments on the command line
     // to their cooresponding Parameter configurations.
@@ -44,14 +56,11 @@ class SmartArg {
 
       for (final mirror in instanceMirror.type.declarations.values
           .where((p) => p is VariableMirror && p.isPrivate == false)) {
-        currentGroup = mirror.metadata
-                .firstWhere((m) => m.reflectee is Group, orElse: () => null)
-                ?.reflectee ??
-            currentGroup;
+        currentGroup =
+            mirror.metadata.firstWhere((m) => m is Group, orElse: () => null) ??
+                currentGroup;
 
-        final parameter = mirror.metadata
-            .firstWhere((m) => m.reflectee is Argument)
-            ?.reflectee;
+        final parameter = mirror.metadata.firstWhere((m) => m is Argument);
         final mpp = MirrorParameterPair(mirror, parameter, currentGroup);
 
         for (final key in mpp.keys(_app)) {
@@ -274,7 +283,7 @@ class SmartArg {
   }
 
   bool _parse(List<String> arguments) {
-    final instanceMirror = reflect(this);
+    final instanceMirror = reflector.reflect(this);
     final List<String> expandedArguments = _rewriteArguments(arguments);
 
     int argumentIndex = 0;
@@ -336,9 +345,8 @@ class SmartArg {
       value = argumentConfiguration.argument.handleValue(argumentName, value);
 
       // Try setting it as a list first
-      var instanceValue = instanceMirror
-          .getField(argumentConfiguration.mirror.simpleName)
-          .reflectee;
+      var instanceValue =
+          instanceMirror.invokeGetter(argumentConfiguration.mirror.simpleName);
 
       // There is no way of determining if a class variable is a list or not through
       // introspection, therefore we try to add the value as a list, or append to the
@@ -347,15 +355,15 @@ class SmartArg {
       if (instanceValue == null) {
         try {
           instanceValue = (argumentConfiguration.argument as dynamic).emptyList;
-          instanceValue.add(value);
+          (instanceValue as List).add(value);
 
-          instanceMirror.setField(
+          instanceMirror.invokeSetter(
               argumentConfiguration.mirror.simpleName, instanceValue);
           _wasSet.add(argumentConfiguration.displayKey);
         } catch (_) {
           // Adding as a list failed, so it must not be a list. Let's set it
           // as a normal value.
-          instanceMirror.setField(
+          instanceMirror.invokeSetter(
               argumentConfiguration.mirror.simpleName, value);
           _wasSet.add(argumentConfiguration.displayKey);
         }
@@ -369,8 +377,8 @@ class SmartArg {
           // the type is a List or not.
           //
           // .first is the first method, .add will be the second
-          var _ = instanceValue.first;
-          instanceValue.add(value);
+          var _ = (instanceValue as List).first;
+          (instanceValue as List).add(value);
           _wasSet.add(argumentConfiguration.displayKey);
         } catch (_) {
           if (_wasSet.contains(argumentConfiguration.displayKey)) {
@@ -380,7 +388,7 @@ class SmartArg {
 
           // Adding as a list failed, so it must not be a list. Let's set it
           // as a normal value.
-          instanceMirror.setField(
+          instanceMirror.invokeSetter(
               argumentConfiguration.mirror.simpleName, value);
           _wasSet.add(argumentConfiguration.displayKey);
         }
@@ -424,7 +432,7 @@ class SmartArg {
   void _launchCommand(MirrorParameterPair commandMpp, List<String> arguments) {
     final a = commandMpp.mirror;
     final b = a.type as ClassMirror;
-    final command = b.newInstance(Symbol(''), []).reflectee as SmartArgCommand;
+    final command = b.newInstance('', []) as SmartArgCommand;
 
     command.parse(arguments);
     command.execute(this);
