@@ -4,6 +4,9 @@ import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import 'smart_arg_test.reflectable.dart';
+
+@SmartArg.parser
 @Parser(
   exitOnFailure: false,
   description: 'app-description',
@@ -35,6 +38,7 @@ class TestSimple extends SmartArg {
   String checkingCamelToDash;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestMultipleShortArgsSameKey extends SmartArg {
   @IntegerArgument(short: 'a')
@@ -44,6 +48,7 @@ class TestMultipleShortArgsSameKey extends SmartArg {
   int xyz;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestMultipleLongArgsSameKey extends SmartArg {
   @IntegerArgument(long: 'abc')
@@ -53,12 +58,14 @@ class TestMultipleLongArgsSameKey extends SmartArg {
   int xyz;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, minimumExtras: 1, maximumExtras: 3)
 class TestMinimumMaximumExtras extends SmartArg {
   @IntegerArgument()
   int a;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestFileDirectoryMustExist extends SmartArg {
   @FileArgument(mustExist: true)
@@ -68,6 +75,7 @@ class TestFileDirectoryMustExist extends SmartArg {
   Directory directory;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestShortAndLongSameKey extends SmartArg {
   @IntegerArgument(short: 'a')
@@ -77,6 +85,7 @@ class TestShortAndLongSameKey extends SmartArg {
   int a; // This is the same as the short for 'abc'
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestMultipleLineArgumentHelp extends SmartArg {
   @BooleanArgument(short: 'a', help: 'Silly help message', isRequired: true)
@@ -86,6 +95,7 @@ class TestMultipleLineArgumentHelp extends SmartArg {
   bool moreReasonableName;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestLongKeyHandling extends SmartArg {
   @StringArgument(long: 'over-ride-long-item-name')
@@ -95,12 +105,14 @@ class TestLongKeyHandling extends SmartArg {
   String itemWithNoLong;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestMustBeOneOf extends SmartArg {
   @StringArgument(mustBeOneOf: ['hello', 'howdy', 'goodbye', 'cya'])
   String greeting;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, strict: true)
 class TestParserStrict extends SmartArg {
   @IntegerArgument(short: 'n')
@@ -110,6 +122,7 @@ class TestParserStrict extends SmartArg {
   bool shouldSayHello;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestIntegerDoubleMinMax extends SmartArg {
   @IntegerArgument(minimum: 1, maximum: 5)
@@ -119,6 +132,7 @@ class TestIntegerDoubleMinMax extends SmartArg {
   double doubleValue;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestMultiple extends SmartArg {
   @StringArgument()
@@ -128,24 +142,28 @@ class TestMultiple extends SmartArg {
   String name;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestHelpArgument extends SmartArg {
   @HelpArgument()
   bool help;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestInvalidShortKeyName extends SmartArg {
   @StringArgument(short: '-n')
   String name;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestInvalidLongKeyName extends SmartArg {
   @StringArgument(long: '-n')
   String name;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestArgumentTerminatorDefault extends SmartArg {
   @StringArgument()
@@ -155,6 +173,7 @@ class TestArgumentTerminatorDefault extends SmartArg {
   String other;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, argumentTerminator: null)
 class TestArgumentTerminatorNull extends SmartArg {
   @StringArgument()
@@ -164,6 +183,7 @@ class TestArgumentTerminatorNull extends SmartArg {
   String other;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, argumentTerminator: '--args')
 class TestArgumentTerminatorSet extends SmartArg {
   @StringArgument()
@@ -173,6 +193,7 @@ class TestArgumentTerminatorSet extends SmartArg {
   String other;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, allowTrailingArguments: false)
 class TestDisallowTrailingArguments extends SmartArg {
   @StringArgument()
@@ -182,6 +203,7 @@ class TestDisallowTrailingArguments extends SmartArg {
   String other;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestAllowTrailingArguments extends SmartArg {
   @StringArgument()
@@ -191,6 +213,7 @@ class TestAllowTrailingArguments extends SmartArg {
   String other;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestStackedBooleanArguments extends SmartArg {
   @BooleanArgument(short: 'a')
@@ -206,21 +229,25 @@ class TestStackedBooleanArguments extends SmartArg {
   bool dvalue;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestNoKey extends SmartArg {
   @StringArgument(long: false)
   String long;
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestWithDefaultValue extends SmartArg {
   @StringArgument()
   String long = 'hello';
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, extendedHelp: [ExtendedHelp(null)])
 class TestBadExtendedHelp extends SmartArg {}
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, description: 'A unit test example')
 class TestArgumentGroups extends SmartArg {
   @Group(
@@ -240,6 +267,8 @@ class TestArgumentGroups extends SmartArg {
 }
 
 void main() {
+  initializeReflectable();
+
   group('argument parsing/assignment', () {
     test('basic arguments', () {
       final args = TestSimple()

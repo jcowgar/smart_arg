@@ -1,23 +1,10 @@
 import 'dart:io';
 
-import 'package:reflectable/reflectable.dart';
 import 'package:smart_arg/smart_arg.dart';
 
 import 'readme_example.reflectable.dart';
 
-class Reflector extends Reflectable {
-  const Reflector()
-      : super(
-          invokingCapability,
-          declarationsCapability,
-          instanceInvokeCapability,
-          metadataCapability,
-        );
-}
-
-const reflector = const Reflector();
-
-@reflector
+@SmartArg.parser
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
   @StringArgument(help: 'Name of person to say hello to')

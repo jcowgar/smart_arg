@@ -2,8 +2,11 @@ import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import 'command_parsing_test.reflectable.dart';
+
 String whatExecuted;
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, description: 'put command')
 class PutCommand extends SmartArgCommand {
   @StringArgument()
@@ -15,6 +18,7 @@ class PutCommand extends SmartArgCommand {
   }
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false, description: 'get command')
 class GetCommand extends SmartArgCommand {
   @StringArgument()
@@ -26,6 +30,7 @@ class GetCommand extends SmartArgCommand {
   }
 }
 
+@SmartArg.parser
 @Parser(exitOnFailure: false)
 class TestSimpleCommand extends SmartArg {
   @BooleanArgument(short: 'v')
@@ -39,6 +44,8 @@ class TestSimpleCommand extends SmartArg {
 }
 
 void main() {
+  initializeReflectable();
+
   group('parsing', () {
     group('commands', () {
       setUp(() {

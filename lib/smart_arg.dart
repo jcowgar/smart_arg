@@ -14,3 +14,4 @@ export 'src/parser.dart';
 export 'src/smart_arg.dart';
 export 'src/smart_arg_command.dart';
 export 'src/string_argument.dart';
+export 'src/reflector.dart';

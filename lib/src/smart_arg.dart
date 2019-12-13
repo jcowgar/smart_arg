@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'dart:mirrors';
 
 import 'package:reflectable/reflectable.dart';
 
@@ -13,23 +12,15 @@ import 'parser.dart';
 import 'smart_arg_command.dart';
 import 'string_utils.dart';
 
-class Reflector extends Reflectable {
-  const Reflector()
-      : super(
-          invokingCapability,
-          declarationsCapability,
-          instanceInvokeCapability,
-          metadataCapability,
-        );
-}
-
-const reflector = const Reflector();
+import 'reflector.dart';
 
 /// Base class for the [SmartArg] parser.
 ///
 /// Your application should extend [SmartArg], add public properties,
 /// and call the [SmartArg.parse()] method on your class.
 class SmartArg {
+  static const parser = Reflector();
+
   //
   // Public API
   //
@@ -40,7 +31,7 @@ class SmartArg {
   List<String> get extras => _extras;
 
   SmartArg() {
-    final instanceMirror = reflector.reflect(this);
+    final instanceMirror = parser.reflect(this);
 
     // Find our app meta data (if any)
     _app = instanceMirror.type.metadata.firstWhere((m) => m is Parser);
@@ -283,7 +274,7 @@ class SmartArg {
   }
 
   bool _parse(List<String> arguments) {
-    final instanceMirror = reflector.reflect(this);
+    final instanceMirror = parser.reflect(this);
     final List<String> expandedArguments = _rewriteArguments(arguments);
 
     int argumentIndex = 0;
