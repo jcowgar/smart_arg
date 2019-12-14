@@ -2,7 +2,7 @@ include: package:pedantic/analysis_options.yaml
 
 analyzer:
   exclude:
-    - example/readme_example.reflectable.dart
+    - **/*.reflectable.*
 
 linter:
   rules:
