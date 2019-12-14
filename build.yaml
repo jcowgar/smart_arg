@@ -4,5 +4,7 @@ targets:
       reflectable:
         generate_for:
           - example/readme_example.dart
+          - test/smart_arg/command_parsing_test.dart
+          - test/smart_arg/smart_arg_test.dart
         options:
           formatted: true
