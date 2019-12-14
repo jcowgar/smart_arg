@@ -9,6 +9,7 @@ script:
   - set -e
   - dartanalyzer --fatal-infos --fatal-warnings ./
   - dartanalyzer --fatal-infos --fatal-warnings ./example
+  - pub run build_runner build
   - pub run test test/smart_arg_test.dart
   - pub global activate coverage
   - dart --disable-service-auth-codes --enable-vm-service=8111 --pause-isolates-on-exit test/smart_arg_test.dart &

@@ -8,4 +8,6 @@ class Reflector extends Reflectable {
           instanceInvokeCapability,
           metadataCapability,
         );
+
+  static const reflector = Reflector();
 }
