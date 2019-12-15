@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import 'readme_example.reflectable.dart';
+
+@SmartArg.reflectable
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
   @StringArgument(help: 'Name of person to say hello to')
   String name = 'World'; // Default to World
 
   @StringArgument(
-    help: 'Greeting text to use',
+    help: 'Message to say to person',
     mustBeOneOf: ['Hello', 'Goodbye'],
   )
   String greeting = 'Hello'; // Default to Hello
@@ -26,6 +29,8 @@ class Args extends SmartArg {
 }
 
 void main(List<String> arguments) {
+  initializeReflectable();
+
   var args = Args()..parse(arguments);
   if (args.help) {
     print(args.usage());

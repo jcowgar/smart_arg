@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import 'command_example.reflectable.dart';
+
+@SmartArg.reflectable
 @Parser(description: 'get file from remote server')
 class GetCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed after downloaded?')
@@ -31,6 +34,7 @@ class GetCommand extends SmartArgCommand {
   }
 }
 
+@SmartArg.reflectable
 @Parser(description: 'put file onto remote server')
 class PutCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed locally after downloaded?')
@@ -60,6 +64,7 @@ class PutCommand extends SmartArgCommand {
   }
 }
 
+@SmartArg.reflectable
 @Parser(
   description: 'Example using commands',
   extendedHelp: [
@@ -82,6 +87,8 @@ class Args extends SmartArg {
 }
 
 void main(List<String> arguments) {
+  initializeReflectable();
+
   var args = Args()..parse(arguments);
 
   if (args.help == true) {

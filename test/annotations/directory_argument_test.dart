@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
+
 import 'package:smart_arg/smart_arg.dart';
 import 'package:test/test.dart';
 
@@ -16,24 +18,25 @@ void main() {
     group('handleValue', () {
       test('returns directory', () {
         var arg = DirectoryArgument();
-        var value = arg.handleValue('dir', './lib');
+        var value = arg.handleValue('dir', path.join('.', 'lib'));
 
-        expect(value.path, contains('/lib'));
+        expect(value.path, contains('${path.separator}lib'));
       });
 
       group('must exist', () {
         test('exists', () {
           var arg = DirectoryArgument(mustExist: true);
-          var value = arg.handleValue('dir', './lib');
+          var value = arg.handleValue('dir', path.join('.', 'lib'));
 
-          expect(value.path, contains('/lib'));
+          expect(value.path, contains('${path.separator}lib'));
         });
 
         test('does not exists', () {
           var arg = DirectoryArgument(mustExist: true);
 
           try {
-            var _ = arg.handleValue('dir', './bad-directory-name');
+            var _ =
+                arg.handleValue('dir', path.join('.', 'bad-directory-name'));
             fail(
                 'directory does not exist, an exception should have been thrown');
           } on ArgumentError {

@@ -1,9 +1,9 @@
 include: package:pedantic/analysis_options.yaml
 
 analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+  exclude:
+    - **/*.reflectable.*
 
 linter:
   rules:
-    omit_local_variable_types: false  # I believe types in code help code comprehension 
+    omit_local_variable_types: false # I believe types in code help code comprehension

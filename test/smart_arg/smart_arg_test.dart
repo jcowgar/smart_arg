@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'package:path/path.dart' as path;
 
 import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
 
+@SmartArg.reflectable
 @Parser(
   exitOnFailure: false,
   description: 'app-description',
@@ -35,6 +37,7 @@ class TestSimple extends SmartArg {
   String checkingCamelToDash;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMultipleShortArgsSameKey extends SmartArg {
   @IntegerArgument(short: 'a')
@@ -44,6 +47,7 @@ class TestMultipleShortArgsSameKey extends SmartArg {
   int xyz;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMultipleLongArgsSameKey extends SmartArg {
   @IntegerArgument(long: 'abc')
@@ -53,12 +57,14 @@ class TestMultipleLongArgsSameKey extends SmartArg {
   int xyz;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, minimumExtras: 1, maximumExtras: 3)
 class TestMinimumMaximumExtras extends SmartArg {
   @IntegerArgument()
   int a;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestFileDirectoryMustExist extends SmartArg {
   @FileArgument(mustExist: true)
@@ -68,6 +74,7 @@ class TestFileDirectoryMustExist extends SmartArg {
   Directory directory;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestShortAndLongSameKey extends SmartArg {
   @IntegerArgument(short: 'a')
@@ -77,6 +84,7 @@ class TestShortAndLongSameKey extends SmartArg {
   int a; // This is the same as the short for 'abc'
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMultipleLineArgumentHelp extends SmartArg {
   @BooleanArgument(short: 'a', help: 'Silly help message', isRequired: true)
@@ -86,6 +94,7 @@ class TestMultipleLineArgumentHelp extends SmartArg {
   bool moreReasonableName;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestLongKeyHandling extends SmartArg {
   @StringArgument(long: 'over-ride-long-item-name')
@@ -95,12 +104,14 @@ class TestLongKeyHandling extends SmartArg {
   String itemWithNoLong;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMustBeOneOf extends SmartArg {
   @StringArgument(mustBeOneOf: ['hello', 'howdy', 'goodbye', 'cya'])
   String greeting;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, strict: true)
 class TestParserStrict extends SmartArg {
   @IntegerArgument(short: 'n')
@@ -110,6 +121,7 @@ class TestParserStrict extends SmartArg {
   bool shouldSayHello;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestIntegerDoubleMinMax extends SmartArg {
   @IntegerArgument(minimum: 1, maximum: 5)
@@ -119,6 +131,7 @@ class TestIntegerDoubleMinMax extends SmartArg {
   double doubleValue;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMultiple extends SmartArg {
   @StringArgument()
@@ -128,24 +141,28 @@ class TestMultiple extends SmartArg {
   String name;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestHelpArgument extends SmartArg {
   @HelpArgument()
   bool help;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestInvalidShortKeyName extends SmartArg {
   @StringArgument(short: '-n')
   String name;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestInvalidLongKeyName extends SmartArg {
   @StringArgument(long: '-n')
   String name;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestArgumentTerminatorDefault extends SmartArg {
   @StringArgument()
@@ -155,6 +172,7 @@ class TestArgumentTerminatorDefault extends SmartArg {
   String other;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, argumentTerminator: null)
 class TestArgumentTerminatorNull extends SmartArg {
   @StringArgument()
@@ -164,6 +182,7 @@ class TestArgumentTerminatorNull extends SmartArg {
   String other;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, argumentTerminator: '--args')
 class TestArgumentTerminatorSet extends SmartArg {
   @StringArgument()
@@ -173,6 +192,7 @@ class TestArgumentTerminatorSet extends SmartArg {
   String other;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, allowTrailingArguments: false)
 class TestDisallowTrailingArguments extends SmartArg {
   @StringArgument()
@@ -182,6 +202,7 @@ class TestDisallowTrailingArguments extends SmartArg {
   String other;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestAllowTrailingArguments extends SmartArg {
   @StringArgument()
@@ -191,6 +212,7 @@ class TestAllowTrailingArguments extends SmartArg {
   String other;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestStackedBooleanArguments extends SmartArg {
   @BooleanArgument(short: 'a')
@@ -206,21 +228,25 @@ class TestStackedBooleanArguments extends SmartArg {
   bool dvalue;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestNoKey extends SmartArg {
   @StringArgument(long: false)
   String long;
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestWithDefaultValue extends SmartArg {
   @StringArgument()
   String long = 'hello';
 }
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, extendedHelp: [ExtendedHelp(null)])
 class TestBadExtendedHelp extends SmartArg {}
 
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, description: 'A unit test example')
 class TestArgumentGroups extends SmartArg {
   @Group(
@@ -238,6 +264,8 @@ class TestArgumentGroups extends SmartArg {
   @IntegerArgument(help: 'How many times do you wish to greet the person?')
   int count = 1;
 }
+
+String whatExecuted;
 
 void main() {
   group('argument parsing/assignment', () {
@@ -480,7 +508,7 @@ void main() {
       test('file that does not exist', () {
         try {
           var _ = TestFileDirectoryMustExist()
-            ..parse(['--file=./file-that-does-not-exist.txt']);
+            ..parse(['--file=.${path.separator}file-that-does-not-exist.txt']);
           fail('file that does not exist did not throw an exception');
         } on ArgumentError {
           expect(1, 1);
@@ -489,7 +517,7 @@ void main() {
 
       test('file that exists', () {
         final args = TestFileDirectoryMustExist()
-          ..parse(['--file=./pubspec.yaml']);
+          ..parse(['--file=.${path.separator}pubspec.yaml']);
         expect(args.file.path, contains('pubspec.yaml'));
       });
     });
@@ -628,7 +656,9 @@ void main() {
       test('directory that does not exist', () {
         try {
           var _ = TestFileDirectoryMustExist()
-            ..parse(['--directory=./directory-that-does-not-exist']);
+            ..parse([
+              '--directory=.${path.separator}directory-that-does-not-exist'
+            ]);
           fail('directory that does not exist did not throw an exception');
         } on ArgumentError {
           expect(1, 1);
@@ -636,7 +666,8 @@ void main() {
       });
 
       test('directory that exists', () {
-        final args = TestFileDirectoryMustExist()..parse(['--directory=./lib']);
+        final args = TestFileDirectoryMustExist()
+          ..parse(['--directory=.${path.separator}lib']);
         expect(args.directory.path, contains('lib'));
       });
     });

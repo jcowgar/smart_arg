@@ -18,3 +18,5 @@ doc/api/
 
 # Others
 .vscode
+
+*.reflectable.dart

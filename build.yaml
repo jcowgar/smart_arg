@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      reflectable:
+        generate_for:
+          - example/command_example.dart
+          - example/readme_example.dart
+          - example/smart_arg_example.dart
+          - test/smart_arg_test.dart
+        options:
+          formatted: true
