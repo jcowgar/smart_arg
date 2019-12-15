@@ -1,10 +1,9 @@
 import 'dart:io';
+import 'package:path/path.dart' as path;
 
 import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
-
-import 'smart_arg_test.reflectable.dart';
 
 @SmartArg.parser
 @Parser(
@@ -268,46 +267,7 @@ class TestArgumentGroups extends SmartArg {
 
 String whatExecuted;
 
-@SmartArg.parser
-@Parser(exitOnFailure: false, description: 'put command')
-class PutCommand extends SmartArgCommand {
-  @StringArgument()
-  String filename;
-
-  @override
-  void execute(SmartArg parentArguments) {
-    whatExecuted = 'put-command: $filename';
-  }
-}
-
-@SmartArg.parser
-@Parser(exitOnFailure: false, description: 'get command')
-class GetCommand extends SmartArgCommand {
-  @StringArgument()
-  String filename;
-
-  @override
-  void execute(SmartArg parentArguments) {
-    whatExecuted = 'get-command: $filename';
-  }
-}
-
-@SmartArg.parser
-@Parser(exitOnFailure: false)
-class TestSimpleCommand extends SmartArg {
-  @BooleanArgument(short: 'v')
-  bool verbose;
-
-  @Command(help: 'Put a file on a remote host')
-  PutCommand put;
-
-  @Command(help: 'Get a file from a remote host')
-  GetCommand get;
-}
-
 void main() {
-  initializeReflectable();
-
   group('argument parsing/assignment', () {
     test('basic arguments', () {
       final args = TestSimple()
@@ -548,7 +508,7 @@ void main() {
       test('file that does not exist', () {
         try {
           var _ = TestFileDirectoryMustExist()
-            ..parse(['--file=./file-that-does-not-exist.txt']);
+            ..parse(['--file=.${path.separator}file-that-does-not-exist.txt']);
           fail('file that does not exist did not throw an exception');
         } on ArgumentError {
           expect(1, 1);
@@ -557,7 +517,7 @@ void main() {
 
       test('file that exists', () {
         final args = TestFileDirectoryMustExist()
-          ..parse(['--file=./pubspec.yaml']);
+          ..parse(['--file=.${path.separator}pubspec.yaml']);
         expect(args.file.path, contains('pubspec.yaml'));
       });
     });
@@ -696,7 +656,9 @@ void main() {
       test('directory that does not exist', () {
         try {
           var _ = TestFileDirectoryMustExist()
-            ..parse(['--directory=./directory-that-does-not-exist']);
+            ..parse([
+              '--directory=.${path.separator}directory-that-does-not-exist'
+            ]);
           fail('directory that does not exist did not throw an exception');
         } on ArgumentError {
           expect(1, 1);
@@ -704,45 +666,10 @@ void main() {
       });
 
       test('directory that exists', () {
-        final args = TestFileDirectoryMustExist()..parse(['--directory=./lib']);
+        final args = TestFileDirectoryMustExist()
+          ..parse(['--directory=.${path.separator}lib']);
         expect(args.directory.path, contains('lib'));
       });
-    });
-  });
-
-  group('commands', () {
-    setUp(() {
-      whatExecuted = null;
-    });
-
-    test('executes with no arguments', () {
-      final args = TestSimpleCommand()..parse([]);
-      expect(args.verbose, null);
-    });
-
-    test('executes with a command', () {
-      final args = TestSimpleCommand()
-        ..parse(['-v', 'put', '--filename=upload.txt']);
-      expect(args.verbose, true);
-      expect(whatExecuted, 'put-command: upload.txt');
-    });
-
-    test('executes with another command', () {
-      final args = TestSimpleCommand()
-        ..parse(['-v', 'get', '--filename=download.txt']);
-      expect(args.verbose, true);
-      expect(whatExecuted, 'get-command: download.txt');
-    });
-
-    test('help appears', () {
-      final args = TestSimpleCommand();
-      final help = args.usage();
-
-      expect(help.contains('COMMANDS'), true);
-      expect(help.contains('  get'), true);
-      expect(help.contains('  put'), true);
-      expect(help.contains('Get a file'), true);
-      expect(help.contains('Put a file'), true);
     });
   });
 

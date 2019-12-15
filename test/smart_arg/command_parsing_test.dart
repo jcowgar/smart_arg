@@ -2,8 +2,6 @@ import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
 
-import 'command_parsing_test.reflectable.dart';
-
 String whatExecuted;
 
 @SmartArg.parser
@@ -44,8 +42,6 @@ class TestSimpleCommand extends SmartArg {
 }
 
 void main() {
-  initializeReflectable();
-
   group('parsing', () {
     group('commands', () {
       setUp(() {
