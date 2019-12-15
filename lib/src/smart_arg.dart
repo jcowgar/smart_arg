@@ -19,7 +19,7 @@ import 'reflector.dart';
 /// Your application should extend [SmartArg], add public properties,
 /// and call the [SmartArg.parse()] method on your class.
 class SmartArg {
-  static const parser = Reflector();
+  static const reflectable = Reflector();
 
   //
   // Public API
@@ -31,7 +31,7 @@ class SmartArg {
   List<String> get extras => _extras;
 
   SmartArg() {
-    final instanceMirror = parser.reflect(this);
+    final instanceMirror = reflectable.reflect(this);
 
     // Find our app meta data (if any)
     _app = instanceMirror.type.metadata.firstWhere((m) => m is Parser);
@@ -274,7 +274,7 @@ class SmartArg {
   }
 
   bool _parse(List<String> arguments) {
-    final instanceMirror = parser.reflect(this);
+    final instanceMirror = reflectable.reflect(this);
     final List<String> expandedArguments = _rewriteArguments(arguments);
 
     int argumentIndex = 0;

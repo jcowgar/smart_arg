@@ -4,7 +4,7 @@ import 'package:smart_arg/smart_arg.dart';
 
 String whatExecuted;
 
-@SmartArg.parser
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, description: 'put command')
 class PutCommand extends SmartArgCommand {
   @StringArgument()
@@ -16,7 +16,7 @@ class PutCommand extends SmartArgCommand {
   }
 }
 
-@SmartArg.parser
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, description: 'get command')
 class GetCommand extends SmartArgCommand {
   @StringArgument()
@@ -28,7 +28,7 @@ class GetCommand extends SmartArgCommand {
   }
 }
 
-@SmartArg.parser
+@SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestSimpleCommand extends SmartArg {
   @BooleanArgument(short: 'v')

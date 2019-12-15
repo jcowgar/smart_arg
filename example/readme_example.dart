@@ -4,7 +4,7 @@ import 'package:smart_arg/smart_arg.dart';
 
 import 'readme_example.reflectable.dart';
 
-@SmartArg.parser
+@SmartArg.reflectable
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
   @StringArgument(help: 'Name of person to say hello to')

@@ -4,7 +4,7 @@ import 'package:smart_arg/smart_arg.dart';
 
 import 'smart_arg_example.reflectable.dart';
 
-@SmartArg.parser
+@SmartArg.reflectable
 @Parser(
   description: 'Example smart arg application',
   minimumExtras: 1,

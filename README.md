@@ -3,23 +3,25 @@ Smart Arg
 
 [![Build Status](https://travis-ci.org/jcowgar/smart_arg.svg?branch=master)](https://travis-ci.org/jcowgar/smart_arg)
 [![codecov](https://codecov.io/gh/jcowgar/smart_arg/branch/master/graph/badge.svg)](https://codecov.io/gh/jcowgar/smart_arg)
+[![Pub](https://img.shields.io/pub/v/smart_arg.svg)](https://pub.dartlang.org/packages/smart_arg)
 
-A simple to use command line argument parser. The main rationale behind this
-argument parser is the use of a class to store the argument values. Therefore,
-you gain static type checking and code completion.
+A source generated, simple to use command line argument parser. The main
+rationale behind this argument parser is the use of a class to store the
+argument values. Therefore, you gain static type checking and code
+completion.
 
-Types currently supported are: `bool`, `int`, `double`, `String`, `File`,
-and `Directory`. Defaults can be supplied as any other Dart class and one
-can determine if a parameter was set based on it's value being null or not.
-Types can also be defined as a `List<T>` to support multiple arguments of the
-same name to be specified on the command line. Anything passed on the command
-line that is not an option will be considered an extra, of which you can
-demand a minimum and/or maximum requirement.
+Types currently supported are: `bool`, `int`, `double`, `String`, `File`, and
+`Directory`. Defaults can be supplied as any other Dart class and one can
+determine if a parameter was set based on it's value being null or not. Types
+can also be defined as a `List<T>` to support multiple arguments of the same
+name to be specified on the command line. Anything passed on the command line
+that is not an option will be considered an extra, of which you can demand a
+minimum and/or maximum requirement.
 
 Through the use of annotations, each parameter (and main class) can have
 various attributes set such as help text, if the parameter is required, if
-the file must exist on disk, can the parameter be negated, a short alias,
-and more.
+the file must exist on disk, can the parameter be negated, a short alias, and
+more.
 
 Beautiful help is of course generated automatically when the user gives an
 incorrect parameter or misses a required parameter or extra.
@@ -31,6 +33,9 @@ import 'dart:io';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import 'readme_example.reflectable.dart';
+
+@SmartArg.reflectable
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
   @StringArgument(help: 'Name of person to say hello to')
@@ -55,6 +60,8 @@ class Args extends SmartArg {
 }
 
 void main(List<String> arguments) {
+  initializeReflectable();
+
   var args = Args()..parse(arguments);
   if (args.help) {
     print(args.usage());
@@ -67,7 +74,8 @@ void main(List<String> arguments) {
 }
 ```
 
-Please see the API documentation for a better understanding of what `Argument` types exist as well as their individual options.
+Please see the API documentation for a better understanding of what
+`Argument` types exist as well as their individual options.
 
 ## Help Output
 
@@ -83,6 +91,29 @@ Hello World application
                  [REQUIRED]
   -h, --help, -? Show help
 ```
+
+## Build Process
+
+`smart_arg` relies on the [reflectable] package. Therefore, you must add to
+your build process. Your `build.yaml` file should look similar to:
+
+```
+targets:
+  $default:
+    builders:
+      reflectable:
+        generate_for:
+          - bin/main.dart
+```
+
+Also, before you can execute your program and any time you change your SmartArg
+class, you must execute the builder:
+
+```
+$ pub run build_runner build
+```
+
+## Complete Example
 
 A more complex example [smart_arg_example.dart][smart_arg_example.dart]
 produces the following output:
@@ -144,6 +175,9 @@ import 'dart:io';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import 'command_example.reflectable.dart';
+
+@SmartArg.reflectable
 @Parser(description: 'get file from remote server')
 class GetCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed after downloaded?')
@@ -173,6 +207,7 @@ class GetCommand extends SmartArgCommand {
   }
 }
 
+@SmartArg.reflectable
 @Parser(description: 'put file onto remote server')
 class PutCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed locally after downloaded?')
@@ -202,6 +237,7 @@ class PutCommand extends SmartArgCommand {
   }
 }
 
+@SmartArg.reflectable
 @Parser(
   description: 'Example using commands',
   extendedHelp: [
@@ -224,6 +260,8 @@ class Args extends SmartArg {
 }
 
 void main(List<String> arguments) {
+  initializeReflectable();
+
   var args = Args()..parse(arguments);
 
   if (args.help == true) {
@@ -240,3 +278,4 @@ Please send pull requests, feature requests and bug reports to the
 
 [tracker]: https://github.com/jcowgar/smart_arg
 [smart_arg_example.dart]: https://github.com/jcowgar/smart_arg/blob/master/example/smart_arg_example.dart
+[reflectable]: https://pub.dev/packages/reflectable
