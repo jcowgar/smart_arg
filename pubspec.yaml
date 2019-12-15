@@ -2,6 +2,7 @@ name: smart_arg
 description: A smart command line argument parser for Dart that provides
   argument validation, static type checking, command execution, beautiful
   help generation and more.
+author: Jeremy Cowgar <jeremy@cowgar.com>
 version: 1.1.0
 homepage: https://github.com/jcowgar/smart_arg
 
@@ -11,9 +12,9 @@ environment:
 dev_dependencies:
   pedantic: ^1.8.0
   test: ^1.6.0
-  reflectable: ^2.2.0
   build_runner: ^1.7.2
   build_test: ^0.10.11
 
 dependencies:
   path: ^1.6.4
+  reflectable: ^2.2.0
