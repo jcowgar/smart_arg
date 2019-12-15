@@ -11,7 +11,7 @@ class Args extends SmartArg {
   String name = 'World'; // Default to World
 
   @StringArgument(
-    help: 'Greeting text to use',
+    help: 'Message to say to person',
     mustBeOneOf: ['Hello', 'Goodbye'],
   )
   String greeting = 'Hello'; // Default to Hello

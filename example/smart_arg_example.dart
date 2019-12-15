@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import 'smart_arg_example.reflectable.dart';
+
+@SmartArg.parser
 @Parser(
   description: 'Example smart arg application',
   minimumExtras: 1,
@@ -88,6 +91,8 @@ class Args extends SmartArg {
 }
 
 void main(List<String> arguments) {
+  initializeReflectable();
+
   var args = Args()..parse(arguments);
 
   if (args.help) {
