@@ -30,7 +30,7 @@ class DirectoryArgument extends Argument {
   Directory handleValue(String key, dynamic value) {
     var result;
 
-    String normalizedAbsolutePath = path.normalize(path.absolute(value));
+    var normalizedAbsolutePath = path.normalize(path.absolute(value));
     result = Directory(normalizedAbsolutePath);
 
     if (mustExist) {

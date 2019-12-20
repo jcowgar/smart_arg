@@ -14,12 +14,22 @@ import 'string_utils.dart';
 
 import 'reflector.dart';
 
+// Local type is needed for strict type checking in lists.
+// var abc = [] turns out to be a List<dynamic> which is not
+// as safe as List<String> abc = [] for example.
+//
+// This file uses a lot of lists, therefore the\
+// omit_local_variable_types linting rule is disabled globally
+// for this file.
+//
+// ignore_for_file: omit_local_variable_types
+
 /// Base class for the [SmartArg] parser.
 ///
 /// Your application should extend [SmartArg], add public properties,
 /// and call the [SmartArg.parse()] method on your class.
 class SmartArg {
-  static const reflectable = Reflector();
+  static const reflectable = Reflector.reflector;
 
   //
   // Public API

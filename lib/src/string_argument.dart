@@ -29,6 +29,11 @@ class StringArgument extends Argument {
 
   @override
   List<String> get additionalHelpLines {
+    // Local type is needed, otherwise result winds up being a
+    // List<dynamic> which is incompatible with the return type.
+    // Therefore, ignore the suggestion from dartanalyzer
+    //
+    // ignore: omit_local_variable_types
     List<String> result = [];
 
     if (mustBeOneOf != null) {

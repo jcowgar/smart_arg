@@ -27,6 +27,11 @@ String hardWrap(String s, [int columns = 80]) {
   final reSplitter = RegExp(r'(\r\n|[\r\n]){2,}');
   final paragraphs = s.split(reSplitter);
 
+  // Local type is needed, otherwise result winds up being a
+  // List<dynamic> which is incompatible with the return type.
+  // Therefore, ignore the suggestion from dartanalyzer
+  //
+  // ignore: omit_local_variable_types
   List<String> result = [];
 
   for (var p in paragraphs) {

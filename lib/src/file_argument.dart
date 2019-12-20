@@ -30,7 +30,7 @@ class FileArgument extends Argument {
   File handleValue(String key, dynamic value) {
     var result;
 
-    String normalizedAbsolutePath = path.normalize(path.absolute(value));
+    var normalizedAbsolutePath = path.normalize(path.absolute(value));
     result = File(normalizedAbsolutePath);
 
     if (mustExist) {

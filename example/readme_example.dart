@@ -37,7 +37,7 @@ void main(List<String> arguments) {
     exit(0);
   }
 
-  for (int i = 0; i < args.count; i++) {
+  for (var i = 0; i < args.count; i++) {
     print('${args.greeting}, ${args.name}!');
   }
 }

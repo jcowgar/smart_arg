@@ -27,6 +27,11 @@ class MirrorParameterPair {
   MirrorParameterPair(this.mirror, this.argument, [this.group]);
 
   List<String> keys(Parser parser) {
+    // Local type is needed, otherwise result winds up being a
+    // List<dynamic> which is incompatible with the return type.
+    // Therefore, ignore the suggestion from dartanalyzer
+    //
+    // ignore: omit_local_variable_types
     List<String> result = [];
 
     String long;
