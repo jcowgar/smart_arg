@@ -35,7 +35,7 @@ class DirectoryArgument extends Argument {
 
     if (mustExist) {
       if (result.existsSync() == false) {
-        throw ArgumentError('${result} for parameter ${key} does not exist');
+        throw ArgumentError('$result for parameter $key does not exist');
       }
     }
 

@@ -1,3 +1,8 @@
+## 1.1.2
+
+- Updated dependencies pedantic, test, path, build_runner, build_test and reflectable
+- Fixed new linting errors "unnecessary_brace_in_string_interps"
+
 ## 1.1.1
 
 - Fixed linting errors from dartanalyzer
