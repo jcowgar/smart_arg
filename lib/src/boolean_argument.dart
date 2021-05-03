@@ -35,7 +35,7 @@ class BooleanArgument extends Argument {
   @override
   List<String> specialKeys(String short, String long) {
     if (isNegateable == true && long != null) {
-      return ['no-${long}'];
+      return ['no-$long'];
     }
 
     return [];

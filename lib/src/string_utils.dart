@@ -38,7 +38,7 @@ String hardWrap(String s, [int columns = 80]) {
     p = p.trim();
     p = p.replaceAll(RegExp(r'\s{2,}'), ' ');
 
-    final reLines = RegExp('.{1,${columns - 1}}(?:\\s+|\$)|.{1,${columns}}');
+    final reLines = RegExp('.{1,${columns - 1}}(?:\\s+|\$)|.{1,$columns}');
     final instances = reLines.allMatches(p);
     final lines = instances.map((v) => p.substring(v.start, v.end).trim());
     result.addAll(lines);
