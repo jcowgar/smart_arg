@@ -30,7 +30,7 @@ incorrect parameter or misses a required parameter or extra.
 
 ```dart
 import 'dart:io';
-import 'package:io.axrs.smart_arg/smart_arg.dart';
+import 'package:smart_arg/smart_arg.dart';
 import 'readme_example.reflectable.dart';
 
 @SmartArg.reflectable
@@ -176,7 +176,7 @@ then also have options of their own. `SmartArg` accomplishes this very easily:
 
 ```dart
 import 'dart:io';
-import 'package:io.axrs.smart_arg/smart_arg.dart';
+import 'package:smart_arg/smart_arg.dart';
 import 'command_example.reflectable.dart';
 
 @SmartArg.reflectable
