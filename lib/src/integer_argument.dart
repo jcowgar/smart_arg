@@ -14,11 +14,13 @@ class IntegerArgument extends Argument {
     bool isRequired,
     this.minimum,
     this.maximum,
+    String environmentVariable,
   }) : super(
           short: short,
           long: long,
           help: help,
           isRequired: isRequired,
+          environmentVariable: environmentVariable,
         );
 
   @override

@@ -1,3 +1,9 @@
+## 1.2.0
+
+_UNRELEASED_
+
+- Added support for reading arguments from Environment Variables if not provided during parsing
+
 ## 1.1.2
 
 - Updated dependencies pedantic, test, path, build_runner, build_test and reflectable

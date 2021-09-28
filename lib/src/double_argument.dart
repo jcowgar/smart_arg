@@ -14,12 +14,13 @@ class DoubleArgument extends Argument {
     bool isRequired,
     this.minimum,
     this.maximum,
+    String environmentVariable,
   }) : super(
-          short: short,
-          long: long,
-          help: help,
-          isRequired: isRequired,
-        );
+            short: short,
+            long: long,
+            help: help,
+            isRequired: isRequired,
+            environmentVariable: environmentVariable);
 
   @override
   double handleValue(String key, dynamic value) {

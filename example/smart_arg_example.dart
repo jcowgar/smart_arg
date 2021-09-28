@@ -1,7 +1,5 @@
 import 'dart:io';
-
-import 'package:smart_arg/smart_arg.dart';
-
+import 'package:io.axrs.smart_arg/smart_arg.dart';
 import 'smart_arg_example.reflectable.dart';
 
 @SmartArg.reflectable

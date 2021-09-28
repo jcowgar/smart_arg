@@ -19,12 +19,13 @@ class FileArgument extends Argument {
     String help,
     bool isRequired,
     this.mustExist = false,
+    String environmentVariable,
   }) : super(
-          short: short,
-          long: long,
-          help: help,
-          isRequired: isRequired,
-        );
+            short: short,
+            long: long,
+            help: help,
+            isRequired: isRequired,
+            environmentVariable: environmentVariable);
 
   @override
   File handleValue(String key, dynamic value) {

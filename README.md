@@ -30,29 +30,30 @@ incorrect parameter or misses a required parameter or extra.
 
 ```dart
 import 'dart:io';
-
-import 'package:smart_arg/smart_arg.dart';
-
+import 'package:io.axrs.smart_arg/smart_arg.dart';
 import 'readme_example.reflectable.dart';
 
 @SmartArg.reflectable
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
-  @StringArgument(help: 'Name of person to say hello to')
-  String name = 'World';    // Default to World
+  @StringArgument(
+      help: 'Name of person to say hello to',
+      environmentVariable:
+          "GREETING_NAME") //Environment Variable will be used if defined and not otherwise specified
+  String name = 'World'; // Default to World
 
   @StringArgument(
-    help: 'Greeting text to use',
-    mustBeOneOf: ['Hello', 'Goodbye'],
-  )
+      help: 'Message to say to person',
+      mustBeOneOf: ['Hello', 'Goodbye'],
+      environmentVariable: "GREETING_TYPE")
   String greeting = 'Hello'; // Default to Hello
 
   @IntegerArgument(
-    help: 'Number of times to greet the person',
-    isRequired: true,
-    minimum: 1,
-    maximum: 100,
-  )
+      help: 'Number of times to greet the person',
+      isRequired: true,
+      minimum: 1,
+      maximum: 100,
+      environmentVariable: "GREETING_COUNT")
   int count;
 
   @HelpArgument()
@@ -68,7 +69,7 @@ void main(List<String> arguments) {
     exit(0);
   }
 
-  for (int i = 0; i < args.count; i++) {
+  for (var i = 0; i < args.count; i++) {
     print('${args.greeting}, ${args.name}!');
   }
 }
@@ -77,7 +78,7 @@ void main(List<String> arguments) {
 Please see the API documentation for a better understanding of what
 `Argument` types exist as well as their individual options.
 
-## Help Output
+### Help Output
 
 The help output of the above example is:
 
@@ -85,10 +86,13 @@ The help output of the above example is:
 Hello World application
 
   --name         Name of person to say hello to
-  --greeting     Greeting text to use
+                 [Environment Variable: $GREETING_NAME]
+  --greeting     Message to say to person
+                 [Environment Variable: $GREETING_TYPE]
                  must be one of Hello, Goodbye
   --count        Number of times to greet the person
                  [REQUIRED]
+                 [Environment Variable: $GREETING_COUNT]
   -h, --help, -? Show help
 ```
 
@@ -110,7 +114,7 @@ Also, before you can execute your program and any time you change your SmartArg
 class, you must execute the builder:
 
 ```
-$ pub run build_runner build
+$ dart run build_runner build
 ```
 
 ## Complete Example
@@ -172,9 +176,7 @@ then also have options of their own. `SmartArg` accomplishes this very easily:
 
 ```dart
 import 'dart:io';
-
-import 'package:smart_arg/smart_arg.dart';
-
+import 'package:io.axrs.smart_arg/smart_arg.dart';
 import 'command_example.reflectable.dart';
 
 @SmartArg.reflectable

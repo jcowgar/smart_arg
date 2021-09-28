@@ -14,6 +14,14 @@ import 'string_utils.dart';
 
 import 'reflector.dart';
 
+bool _nonNull(dynamic value) {
+  return value != null;
+}
+
+bool _notBlank(String value) {
+  return _nonNull(value) && value.trim().isNotEmpty;
+}
+
 // Local type is needed for strict type checking in lists.
 // var abc = [] turns out to be a List<dynamic> which is not
 // as safe as List<String> abc = [] for example.
@@ -135,6 +143,11 @@ class SmartArg {
 
         if (mpp.argument.isRequired ?? false) {
           helpLines.add('[REQUIRED]');
+        }
+
+        if (_notBlank(mpp.argument.environmentVariable)) {
+          helpLines.add(
+              '[Environment Variable: \$${mpp.argument.environmentVariable}]');
         }
 
         helpLines.addAll(mpp.argument.additionalHelpLines);
@@ -343,61 +356,10 @@ class SmartArg {
         argumentIndex++;
       }
 
-      value = argumentConfiguration.argument.handleValue(argumentName, value);
-
-      // Try setting it as a list first
-      var instanceValue =
-          instanceMirror.invokeGetter(argumentConfiguration.mirror.simpleName);
-
-      // There is no way of determining if a class variable is a list or not through
-      // introspection, therefore we try to add the value as a list, or append to the
-      // list first. If that fails, we assume it is not a list :-/
-
-      if (instanceValue == null) {
-        try {
-          instanceValue = (argumentConfiguration.argument as dynamic).emptyList;
-          (instanceValue as List).add(value);
-
-          instanceMirror.invokeSetter(
-              argumentConfiguration.mirror.simpleName, instanceValue);
-          _wasSet.add(argumentConfiguration.displayKey);
-        } catch (_) {
-          // Adding as a list failed, so it must not be a list. Let's set it
-          // as a normal value.
-          instanceMirror.invokeSetter(
-              argumentConfiguration.mirror.simpleName, value);
-          _wasSet.add(argumentConfiguration.displayKey);
-        }
-      } else {
-        try {
-          // Since we can not determine if the instanceValue is a list or not...
-          //
-          // Just try the .first method to see if it exists. We don't really care
-          // about the value, we just want to execute at least two methods on
-          // the instance value to do as good of a job as we can to determine if
-          // the type is a List or not.
-          //
-          // .first is the first method, .add will be the second
-          var _ = (instanceValue as List).first;
-          (instanceValue as List).add(value);
-          _wasSet.add(argumentConfiguration.displayKey);
-        } catch (_) {
-          if (_wasSet.contains(argumentConfiguration.displayKey)) {
-            throw ArgumentError(
-                '${argumentConfiguration.displayKey} was supplied more than once');
-          }
-
-          // Adding as a list failed, so it must not be a list. Let's set it
-          // as a normal value.
-          instanceMirror.invokeSetter(
-              argumentConfiguration.mirror.simpleName, value);
-          _wasSet.add(argumentConfiguration.displayKey);
-        }
-      }
+      _trySetValue(instanceMirror, argumentName, value);
 
       if (argumentConfiguration.argument is HelpArgument) {
         _extras.addAll(expandedArguments.skip(argumentIndex));
-
         return false;
       }
     }
@@ -405,13 +367,92 @@ class SmartArg {
     return true;
   }
 
+  //Attempts to set the value of the argument
+  void _trySetValue(
+      InstanceMirror instanceMirror, String argumentName, dynamic value) {
+    var argumentConfiguration = _values[argumentName];
+    value = argumentConfiguration.argument.handleValue(argumentName, value);
+
+    // Try setting it as a list first
+    var instanceValue =
+        instanceMirror.invokeGetter(argumentConfiguration.mirror.simpleName);
+
+    // There is no way of determining if a class variable is a list or not through
+    // introspection, therefore we try to add the value as a list, or append to the
+    // list first. If that fails, we assume it is not a list :-/
+
+    if (instanceValue == null) {
+      try {
+        instanceValue = (argumentConfiguration.argument as dynamic).emptyList;
+        (instanceValue as List).add(value);
+
+        instanceMirror.invokeSetter(
+            argumentConfiguration.mirror.simpleName, instanceValue);
+        _wasSet.add(argumentConfiguration.displayKey);
+      } catch (_) {
+        // Adding as a list failed, so it must not be a list. Let's set it
+        // as a normal value.
+        instanceMirror.invokeSetter(
+            argumentConfiguration.mirror.simpleName, value);
+        _wasSet.add(argumentConfiguration.displayKey);
+      }
+    } else {
+      try {
+        // Since we can not determine if the instanceValue is a list or not...
+        //
+        // Just try the .first method to see if it exists. We don't really care
+        // about the value, we just want to execute at least two methods on
+        // the instance value to do as good of a job as we can to determine if
+        // the type is a List or not.
+        //
+        // .first is the first method, .add will be the second
+        var _ = (instanceValue as List).first;
+        (instanceValue as List).add(value);
+        _wasSet.add(argumentConfiguration.displayKey);
+      } catch (_) {
+        if (_wasSet.contains(argumentConfiguration.displayKey)) {
+          throw ArgumentError(
+              '${argumentConfiguration.displayKey} was supplied more than once');
+        }
+
+        // Adding as a list failed, so it must not be a list. Let's set it
+        // as a normal value.
+        instanceMirror.invokeSetter(
+            argumentConfiguration.mirror.simpleName, value);
+        _wasSet.add(argumentConfiguration.displayKey);
+      }
+    }
+  }
+
+  bool _argumentWasSet(String argumentName) {
+    return _wasSet.contains(argumentName);
+  }
+
+  bool _isFalse(dynamic value) {
+    return value == false;
+  }
+
+  bool _isTrue(dynamic value) {
+    return value == true;
+  }
+
   void _validate() {
     // Check to see if we have any required arguments missing
     final List<String> isMissing = [];
+    final instanceMirror = reflectable.reflect(this);
     for (var mpp in _mirrorParameterPairs) {
-      if (mpp.argument.isRequired == true &&
-          _wasSet.contains(mpp.displayKey) == false) {
-        isMissing.add(mpp.displayKey);
+      var argumentName = mpp.displayKey;
+      var envVar = mpp.argument.environmentVariable;
+      if (_isFalse(_argumentWasSet(argumentName)) && _notBlank(envVar)) {
+        String envVarValue = Platform.environment[envVar];
+        if (_notBlank(envVarValue)) {
+          _trySetValue(instanceMirror, argumentName, envVarValue?.trim());
+        }
+      }
+
+      if (_isTrue(mpp.argument.isRequired) &&
+          _isFalse(_argumentWasSet(argumentName))) {
+        isMissing.add(argumentName);
       }
     }
 
