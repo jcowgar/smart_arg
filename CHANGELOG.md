@@ -1,7 +1,5 @@
 ## 1.2.0
 
-_UNRELEASED_
-
 - Added support for reading arguments from Environment Variables if not provided during parsing
 - Upgraded dev_dependencies
   - test to `^1.18.2`
