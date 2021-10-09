@@ -17,4 +17,3 @@ dev_dependencies:
 dependencies:
   path: ^1.8.0
   reflectable: ^3.0.4
-  collection: ^1.15.0-nullsafety.4

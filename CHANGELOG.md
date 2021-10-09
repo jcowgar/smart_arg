@@ -11,6 +11,7 @@ _UNRELEASED_
 - Upgraded dependencies
   - reflectable to `3.0.4`
 - Fixed various linter warnings
+- Upgraded for Null Type Safety
 
 ## 1.1.2
 
