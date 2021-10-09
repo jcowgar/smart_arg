@@ -9,8 +9,9 @@ import 'readme_example.reflectable.dart';
 class Args extends SmartArg {
   @StringArgument(
     help: 'Name of person to say hello to',
+    //Environment Variable will be used if defined and not otherwise specified
     environmentVariable: "GREETING_NAME",
-  ) //Environment Variable will be used if defined and not otherwise specified
+  )
   String name = 'World'; // Default to World
 
   @StringArgument(
