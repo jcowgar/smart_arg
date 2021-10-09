@@ -1,6 +1,5 @@
-import 'package:test/test.dart';
-
 import 'package:smart_arg/smart_arg.dart';
+import 'package:test/test.dart';
 
 import '../smart_arg_test.reflectable.dart';
 
@@ -41,6 +40,26 @@ class TestSimpleCommand extends SmartArg {
 
   @Command(help: 'Get a file from a remote host')
   GetCommand? get;
+
+  List<String> hookOrder = [];
+
+  @override
+  void beforeCommandParse(SmartArgCommand command, List<String> arguments) {
+    super.beforeCommandParse(command, arguments);
+    hookOrder.add("beforeCommandParse");
+  }
+
+  @override
+  void beforeCommandExecute(SmartArgCommand command) {
+    super.beforeCommandExecute(command);
+    hookOrder.add("beforeCommandExecute");
+  }
+
+  @override
+  void afterCommandExecute(SmartArgCommand command) {
+    super.beforeCommandExecute(command);
+    hookOrder.add("afterCommandExecute");
+  }
 }
 
 void main() {
@@ -54,6 +73,18 @@ void main() {
       test('executes with no arguments', () {
         final args = TestSimpleCommand()..parse([]);
         expect(args.verbose, null);
+      });
+
+      test('calls hooks', () {
+        var cmd = TestSimpleCommand();
+        final args = cmd..parse(['get', '--filename=download.txt']);
+        expect(args.verbose, null);
+        expect(whatExecuted, 'get-command: download.txt');
+        expect(cmd.hookOrder, [
+          "beforeCommandParse",
+          "beforeCommandExecute",
+          "afterCommandExecute"
+        ]);
       });
 
       test('executes with a command', () {

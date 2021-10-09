@@ -1,6 +1,10 @@
 ## 1.2.0
 
 - Added support for reading arguments from Environment Variables if not provided during parsing
+- Added extra methods to `SmartArg` for handling lifecycle operations:
+  - `beforeCommandParse`
+  - `beforeCommandExecute`
+  - `afterCommandExecute`
 - Upgraded dev_dependencies
   - test to `^1.18.2`
   - build_runner to `^2.1.4`

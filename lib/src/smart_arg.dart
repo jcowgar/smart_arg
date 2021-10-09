@@ -314,9 +314,7 @@ class SmartArg {
         if (_commands.containsKey(argument)) {
           final command = _commands[argument]!;
           final commandArguments = arguments.skip(argumentIndex).toList();
-
           _launchCommand(command, commandArguments);
-
           return true;
         } else {
           // Was not an argument, must be an extra
@@ -486,12 +484,24 @@ class SmartArg {
     final b = a.type as ClassMirror;
     final command = b.newInstance('', []) as SmartArgCommand;
 
+    beforeCommandParse(command, arguments);
     command.parse(arguments);
+    beforeCommandExecute(command);
     command.execute(this);
+    afterCommandExecute(command);
   }
 
   void _resetParser() {
     _wasSet = {};
     _extras = [];
   }
+
+  /// Invoked before a command is parsed
+  void beforeCommandParse(SmartArgCommand command, List<String> arguments) {}
+
+  /// Invoked before a command is executed
+  void beforeCommandExecute(SmartArgCommand command) {}
+
+  /// Invoked after a command is executed
+  void afterCommandExecute(SmartArgCommand command) {}
 }
