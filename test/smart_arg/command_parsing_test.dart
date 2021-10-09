@@ -2,6 +2,8 @@ import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import '../smart_arg_test.reflectable.dart';
+
 String whatExecuted;
 
 @SmartArg.reflectable
@@ -42,6 +44,7 @@ class TestSimpleCommand extends SmartArg {
 }
 
 void main() {
+  initializeReflectable();
   group('parsing', () {
     group('commands', () {
       setUp(() {

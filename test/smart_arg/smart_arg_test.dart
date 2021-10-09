@@ -5,6 +5,8 @@ import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import '../smart_arg_test.reflectable.dart';
+
 @SmartArg.reflectable
 @Parser(
   exitOnFailure: false,
@@ -268,6 +270,7 @@ class TestArgumentGroups extends SmartArg {
 String whatExecuted;
 
 void main() {
+  initializeReflectable();
   group('argument parsing/assignment', () {
     test('basic arguments', () {
       final args = TestSimple()
