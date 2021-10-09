@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:reflectable/reflectable.dart';
 
 import 'argument.dart';
@@ -13,13 +14,9 @@ import 'reflector.dart';
 import 'smart_arg_command.dart';
 import 'string_utils.dart';
 
-bool _nonNull(dynamic value) {
-  return value != null;
-}
+bool _nonNull(dynamic value) => value != null;
 
-bool _notBlank(String value) {
-  return _nonNull(value) && value.trim().isNotEmpty;
-}
+bool _notBlank(String? value) => _nonNull(value) && value!.trim().isNotEmpty;
 
 // Local type is needed for strict type checking in lists.
 // var abc = [] turns out to be a List<dynamic> which is not
@@ -45,13 +42,14 @@ class SmartArg {
   /// List of extras supplied on the command line.
   ///
   /// Extras are anything supplied on the command line that was not an option.
-  List<String> get extras => _extras;
+  List<String>? get extras => _extras;
 
   SmartArg() {
     final instanceMirror = reflectable.reflect(this);
 
     // Find our app meta data (if any)
-    _app = instanceMirror.type.metadata.firstWhere((m) => m is Parser);
+    _app =
+        instanceMirror.type.metadata.firstWhere((m) => m is Parser) as Parser?;
 
     // Build an easy to use lookup for arguments on the command line
     // to their cooresponding Parameter configurations.
@@ -60,16 +58,17 @@ class SmartArg {
     _mirrorParameterPairs = [];
 
     {
-      Group currentGroup;
+      Group? currentGroup;
 
       for (final mirror in instanceMirror.type.declarations.values
           .where((p) => p is VariableMirror && p.isPrivate == false)) {
         currentGroup =
-            mirror.metadata.firstWhere((m) => m is Group, orElse: () => null) ??
+            mirror.metadata.firstWhereOrNull((m) => m is Group) as Group? ??
                 currentGroup;
 
         final parameter = mirror.metadata.firstWhere((m) => m is Argument);
-        final mpp = MirrorParameterPair(mirror, parameter, currentGroup);
+        final mpp = MirrorParameterPair(
+            mirror as VariableMirror, parameter as Argument, currentGroup);
 
         for (final key in mpp.keys(_app)) {
           if (_values.containsKey(key)) {
@@ -115,15 +114,15 @@ class SmartArg {
 
   /// Return a string telling the user how to use your application from the command line.
   String usage() {
-    List<String> lines = [];
+    List<String?> lines = [];
 
     if (_app?.description != null) {
-      lines.add(_app.description);
+      lines.add(_app!.description);
       lines.add('');
     }
 
     List<String> helpKeys = [];
-    List<Group> helpGroups = [];
+    List<Group?> helpGroups = [];
     List<List<String>> helpDescriptions = [];
 
     final arguments =
@@ -132,9 +131,9 @@ class SmartArg {
 
     if (arguments.isNotEmpty) {
       for (var mpp in arguments) {
-        List<String> keys = [];
+        List<String?> keys = [];
 
-        keys.addAll(mpp.keys(_app).map((v) => v.startsWith('-') ? v : '--$v'));
+        keys.addAll(mpp.keys(_app).map((v) => v!.startsWith('-') ? v : '--$v'));
         helpKeys.add(keys.join(', '));
         helpGroups.add(mpp.group);
 
@@ -169,17 +168,17 @@ class SmartArg {
     final keyPadWidth = min(maxKeyLenAllowed, maxKeyLen + 1);
 
     {
-      void trailingHelp(Group group) {
+      void trailingHelp(Group? group) {
         if (group?.afterHelp != null) {
           lines.add('');
           lines.add(indent(
-            hardWrap(group.afterHelp, lineWidth - lineIndent),
+            hardWrap(group!.afterHelp!, lineWidth - lineIndent),
             lineIndent,
           ));
         }
       }
 
-      Group currentGroup;
+      Group? currentGroup;
 
       for (var i = 0; i < helpKeys.length; i++) {
         final thisGroup = helpGroups[i];
@@ -191,11 +190,11 @@ class SmartArg {
             lines.add('');
           }
 
-          lines.add(thisGroup.name);
+          lines.add(thisGroup!.name);
 
           if (thisGroup.beforeHelp != null) {
             lines.add(indent(
-                hardWrap(thisGroup.beforeHelp, lineWidth - lineIndent),
+                hardWrap(thisGroup.beforeHelp!, lineWidth - lineIndent),
                 lineIndent));
             lines.add('');
           }
@@ -229,10 +228,10 @@ class SmartArg {
       lines.add('COMMANDS');
 
       final maxCommandLength =
-          commands.fold(0, (int a, b) => max(a, b.displayKey.length));
+          commands.fold(0, (int a, b) => max(a, b.displayKey!.length));
 
       for (var mpp in commands) {
-        final key = mpp.displayKey.padRight(maxCommandLength + 1);
+        final key = mpp.displayKey!.padRight(maxCommandLength + 1);
         final help = mpp.argument.help ?? '';
         final displayString = '$key $help';
 
@@ -241,7 +240,7 @@ class SmartArg {
     }
 
     if (_app?.extendedHelp != null) {
-      for (final eh in _app.extendedHelp) {
+      for (final eh in _app!.extendedHelp!) {
         if (eh.help == null) {
           throw StateError('Help.help must be set');
         }
@@ -249,11 +248,11 @@ class SmartArg {
         lines.add('');
 
         if (eh.header != null) {
-          lines.add(hardWrap(eh.header, lineWidth));
+          lines.add(hardWrap(eh.header!, lineWidth));
           lines.add(
-              indent(hardWrap(eh.help, lineWidth - lineIndent), lineIndent));
+              indent(hardWrap(eh.help!, lineWidth - lineIndent), lineIndent));
         } else {
-          lines.add(hardWrap(eh.help, lineWidth));
+          lines.add(hardWrap(eh.help!, lineWidth));
         }
       }
     }
@@ -265,14 +264,14 @@ class SmartArg {
   // Private API
   //
 
-  Parser _app;
-  Map<String, MirrorParameterPair> _values;
-  Map<String, MirrorParameterPair> _commands;
-  List<String> _extras;
-  Set<String> _wasSet;
+  Parser? _app;
+  late Map<String?, MirrorParameterPair> _values;
+  late Map<String?, MirrorParameterPair> _commands;
+  List<String>? _extras;
+  late Set<String?> _wasSet;
 
   // tracked so we can have a proper order for help output
-  List<MirrorParameterPair> _mirrorParameterPairs;
+  late List<MirrorParameterPair> _mirrorParameterPairs;
 
   bool _isStacked(String value) {
     final isSingleDash = value.startsWith('-') && !value.startsWith('--');
@@ -308,12 +307,12 @@ class SmartArg {
 
       argumentIndex++;
 
-      if (argument.toLowerCase() == _app.argumentTerminator?.toLowerCase()) {
-        _extras.addAll(expandedArguments.skip(argumentIndex));
+      if (argument.toLowerCase() == _app!.argumentTerminator?.toLowerCase()) {
+        _extras!.addAll(expandedArguments.skip(argumentIndex));
         return true;
       } else if (argument.startsWith('-') == false) {
         if (_commands.containsKey(argument)) {
-          final command = _commands[argument];
+          final command = _commands[argument]!;
           final commandArguments = arguments.skip(argumentIndex).toList();
 
           _launchCommand(command, commandArguments);
@@ -321,10 +320,10 @@ class SmartArg {
           return true;
         } else {
           // Was not an argument, must be an extra
-          _extras.add(argument);
+          _extras!.add(argument);
 
-          if (_app.allowTrailingArguments == false) {
-            _extras.addAll(expandedArguments.skip(argumentIndex));
+          if (_app!.allowTrailingArguments == false) {
+            _extras!.addAll(expandedArguments.skip(argumentIndex));
             return true;
           }
 
@@ -360,7 +359,7 @@ class SmartArg {
       _trySetValue(instanceMirror, argumentName, value);
 
       if (argumentConfiguration.argument is HelpArgument) {
-        _extras.addAll(expandedArguments.skip(argumentIndex));
+        _extras!.addAll(expandedArguments.skip(argumentIndex));
         return false;
       }
     }
@@ -370,13 +369,23 @@ class SmartArg {
 
   //Attempts to set the value of the argument
   void _trySetValue(
-      InstanceMirror instanceMirror, String argumentName, dynamic value) {
-    var argumentConfiguration = _values[argumentName];
+    InstanceMirror instanceMirror,
+    String? argumentName,
+    dynamic value,
+  ) {
+    var argumentConfiguration = _values[argumentName]!;
     value = argumentConfiguration.argument.handleValue(argumentName, value);
 
     // Try setting it as a list first
-    var instanceValue =
-        instanceMirror.invokeGetter(argumentConfiguration.mirror.simpleName);
+    dynamic instanceValue;
+    try {
+      instanceValue =
+          instanceMirror.invokeGetter(argumentConfiguration.mirror.simpleName);
+    } catch (error) {
+      if (error.runtimeType.toString() != "LateError") {
+        rethrow;
+      }
+    }
 
     // There is no way of determining if a class variable is a list or not through
     // introspection, therefore we try to add the value as a list, or append to the
@@ -408,7 +417,7 @@ class SmartArg {
         //
         // .first is the first method, .add will be the second
         var _ = (instanceValue as List).first;
-        (instanceValue as List).add(value);
+        instanceValue.add(value);
         _wasSet.add(argumentConfiguration.displayKey);
       } catch (_) {
         if (_wasSet.contains(argumentConfiguration.displayKey)) {
@@ -425,7 +434,7 @@ class SmartArg {
     }
   }
 
-  bool _argumentWasSet(String argumentName) {
+  bool _argumentWasSet(String? argumentName) {
     return _wasSet.contains(argumentName);
   }
 
@@ -439,13 +448,13 @@ class SmartArg {
 
   void _validate() {
     // Check to see if we have any required arguments missing
-    final List<String> isMissing = [];
+    final List<String?> isMissing = [];
     final instanceMirror = reflectable.reflect(this);
     for (var mpp in _mirrorParameterPairs) {
       var argumentName = mpp.displayKey;
       var envVar = mpp.argument.environmentVariable;
       if (_isFalse(_argumentWasSet(argumentName)) && _notBlank(envVar)) {
-        String envVarValue = Platform.environment[envVar];
+        String? envVarValue = Platform.environment[envVar!];
         if (_notBlank(envVarValue)) {
           _trySetValue(instanceMirror, argumentName, envVarValue?.trim());
         }
@@ -462,13 +471,13 @@ class SmartArg {
           'missing required arguments: ${isMissing.join(', ')}');
     }
 
-    if (_app.minimumExtras != null && extras.length < _app.minimumExtras) {
+    if (_app!.minimumExtras != null && extras!.length < _app!.minimumExtras!) {
       throw ArgumentError(
-          'expecting at least ${_app.minimumExtras} free form arguments but ${extras.length} was supplied');
-    } else if (_app.maximumExtras != null &&
-        extras.length > _app.maximumExtras) {
+          'expecting at least ${_app!.minimumExtras} free form arguments but ${extras!.length} was supplied');
+    } else if (_app!.maximumExtras != null &&
+        extras!.length > _app!.maximumExtras!) {
       throw ArgumentError(
-          'expecting at most ${_app.maximumExtras} free form arguments but ${extras.length} was supplied');
+          'expecting at most ${_app!.maximumExtras} free form arguments but ${extras!.length} was supplied');
     }
   }
 

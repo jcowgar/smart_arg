@@ -36,19 +36,19 @@ class Args extends SmartArg {
         'This is just a single sentence but even it will be wrapped if necessary',
   )
   @StringArgument()
-  List<String> names;
+  List<String>? names;
 
   @StringArgument(
     short: 'r',
     help: 'Report header text',
   )
-  String header;
+  String? header;
 
   @FileArgument(
     help: 'Filename to report stats on',
     mustExist: true,
   )
-  File filename;
+  File? filename;
 
   @Group(
     name: 'Group 2 -- OTHER',
@@ -58,13 +58,13 @@ class Args extends SmartArg {
   @IntegerArgument(
     help: 'Count of times to say hello',
   )
-  int count;
+  int? count;
 
   @DoubleArgument(
     help:
         'Some other silly parameter to show double parsing. This also has a very long description that should word wrap in the output and produce beautiful display.',
   )
-  double silly;
+  double? silly;
 
   @BooleanArgument(
     short: 'v',
@@ -104,5 +104,5 @@ void main(List<String> arguments) {
   print('count   : ${args.count}');
   print('silly   : ${args.silly}');
   print('names   : ${args.names?.join(', ')}');
-  print('extras  : ${args.extras.join(' ')}');
+  print('extras  : ${args.extras!.join(' ')}');
 }

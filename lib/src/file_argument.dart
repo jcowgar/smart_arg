@@ -14,12 +14,12 @@ class FileArgument extends Argument {
   final bool mustExist;
 
   const FileArgument({
-    String short,
+    String? short,
     dynamic long,
-    String help,
-    bool isRequired,
+    String? help,
+    bool? isRequired,
     this.mustExist = false,
-    String environmentVariable,
+    String? environmentVariable,
   }) : super(
           short: short,
           long: long,
@@ -29,7 +29,7 @@ class FileArgument extends Argument {
         );
 
   @override
-  File handleValue(String key, dynamic value) {
+  File handleValue(String? key, dynamic value) {
     var normalizedAbsolutePath = path.normalize(path.absolute(value));
     final File result = File(normalizedAbsolutePath);
 

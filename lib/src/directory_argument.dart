@@ -14,12 +14,12 @@ class DirectoryArgument extends Argument {
   final bool mustExist;
 
   const DirectoryArgument({
-    String short,
+    String? short,
     dynamic long,
-    String help,
-    bool isRequired,
+    String? help,
+    bool? isRequired,
     this.mustExist = false,
-    String environmentVariable,
+    String? environmentVariable,
   }) : super(
           short: short,
           long: long,
@@ -29,7 +29,7 @@ class DirectoryArgument extends Argument {
         );
 
   @override
-  Directory handleValue(String key, dynamic value) {
+  Directory handleValue(String? key, dynamic value) {
     var normalizedAbsolutePath = path.normalize(path.absolute(value));
     final Directory result = Directory(normalizedAbsolutePath);
 

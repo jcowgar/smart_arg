@@ -27,7 +27,7 @@ class Args extends SmartArg {
     maximum: 100,
     environmentVariable: "GREETING_COUNT",
   )
-  int count;
+  late int count;
 
   @HelpArgument()
   bool help = false;
