@@ -2,19 +2,19 @@ import 'argument.dart';
 
 class IntegerArgument extends Argument {
   /// Minimum number allowed, if any.
-  final int minimum;
+  final int? minimum;
 
   /// Maximum number allowed, if any.
-  final int maximum;
+  final int? maximum;
 
   const IntegerArgument({
-    String short,
+    String? short,
     dynamic long,
-    String help,
-    bool isRequired,
+    String? help,
+    bool? isRequired,
     this.minimum,
     this.maximum,
-    String environmentVariable,
+    String? environmentVariable,
   }) : super(
           short: short,
           long: long,
@@ -24,14 +24,14 @@ class IntegerArgument extends Argument {
         );
 
   @override
-  int handleValue(String key, dynamic value) {
+  int? handleValue(String? key, dynamic value) {
     var result = int.tryParse(value);
 
-    if (minimum != null && result < minimum) {
+    if (minimum != null && result! < minimum!) {
       throw ArgumentError('$key must be at least $minimum');
     }
 
-    if (maximum != null && result > maximum) {
+    if (maximum != null && result! > maximum!) {
       throw ArgumentError('$key must be at most $maximum');
     }
 

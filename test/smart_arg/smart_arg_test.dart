@@ -5,6 +5,8 @@ import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
 
+import '../smart_arg_test.reflectable.dart';
+
 @SmartArg.reflectable
 @Parser(
   exitOnFailure: false,
@@ -16,223 +18,223 @@ import 'package:smart_arg/smart_arg.dart';
 )
 class TestSimple extends SmartArg {
   @BooleanArgument(isNegateable: true, help: 'bvalue-help')
-  bool bvalue;
+  bool? bvalue;
 
   @IntegerArgument(short: 'i')
-  int ivalue;
+  int? ivalue;
 
   @DoubleArgument(isRequired: true)
-  double dvalue;
+  double? dvalue;
 
   @StringArgument()
-  String svalue;
+  String? svalue;
 
   @FileArgument()
-  File fvalue;
+  File? fvalue;
 
   @DirectoryArgument()
-  Directory dirvalue;
+  Directory? dirvalue;
 
   @StringArgument()
-  String checkingCamelToDash;
+  String? checkingCamelToDash;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMultipleShortArgsSameKey extends SmartArg {
   @IntegerArgument(short: 'a')
-  int abc;
+  int? abc;
 
   @IntegerArgument(short: 'a')
-  int xyz;
+  int? xyz;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMultipleLongArgsSameKey extends SmartArg {
   @IntegerArgument(long: 'abc')
-  int abc;
+  int? abc;
 
   @IntegerArgument(long: 'abc')
-  int xyz;
+  int? xyz;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false, minimumExtras: 1, maximumExtras: 3)
 class TestMinimumMaximumExtras extends SmartArg {
   @IntegerArgument()
-  int a;
+  int? a;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestFileDirectoryMustExist extends SmartArg {
   @FileArgument(mustExist: true)
-  File file;
+  late final File file;
 
   @DirectoryArgument(mustExist: true)
-  Directory directory;
+  late final Directory directory;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestShortAndLongSameKey extends SmartArg {
   @IntegerArgument(short: 'a')
-  int abc;
+  int? abc;
 
   @IntegerArgument()
-  int a; // This is the same as the short for 'abc'
+  int? a; // This is the same as the short for 'abc'
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMultipleLineArgumentHelp extends SmartArg {
   @BooleanArgument(short: 'a', help: 'Silly help message', isRequired: true)
-  bool thisIsAReallyLongParameterNameThatWillCauseWordWrapping;
+  bool? thisIsAReallyLongParameterNameThatWillCauseWordWrapping;
 
   @BooleanArgument(short: 'b', help: 'Another help message here')
-  bool moreReasonableName;
+  bool? moreReasonableName;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestLongKeyHandling extends SmartArg {
   @StringArgument(long: 'over-ride-long-item-name')
-  String longItem;
+  String? longItem;
 
   @StringArgument(long: false, short: 'n')
-  String itemWithNoLong;
+  String? itemWithNoLong;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMustBeOneOf extends SmartArg {
   @StringArgument(mustBeOneOf: ['hello', 'howdy', 'goodbye', 'cya'])
-  String greeting;
+  String? greeting;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false, strict: true)
 class TestParserStrict extends SmartArg {
   @IntegerArgument(short: 'n')
-  int nono;
+  int? nono;
 
   @BooleanArgument(long: 'say-hello')
-  bool shouldSayHello;
+  bool? shouldSayHello;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestIntegerDoubleMinMax extends SmartArg {
   @IntegerArgument(minimum: 1, maximum: 5)
-  int intValue;
+  int? intValue;
 
   @DoubleArgument(minimum: 1.5, maximum: 4.5)
-  double doubleValue;
+  double? doubleValue;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestMultiple extends SmartArg {
   @StringArgument()
-  List<String> names;
+  late List<String> names;
 
   @StringArgument()
-  String name;
+  String? name;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestHelpArgument extends SmartArg {
   @HelpArgument()
-  bool help;
+  bool? help;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestInvalidShortKeyName extends SmartArg {
   @StringArgument(short: '-n')
-  String name;
+  String? name;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestInvalidLongKeyName extends SmartArg {
   @StringArgument(long: '-n')
-  String name;
+  String? name;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestArgumentTerminatorDefault extends SmartArg {
   @StringArgument()
-  String name;
+  String? name;
 
   @StringArgument()
-  String other;
+  String? other;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false, argumentTerminator: null)
 class TestArgumentTerminatorNull extends SmartArg {
   @StringArgument()
-  String name;
+  String? name;
 
   @StringArgument()
-  String other;
+  String? other;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false, argumentTerminator: '--args')
 class TestArgumentTerminatorSet extends SmartArg {
   @StringArgument()
-  String name;
+  String? name;
 
   @StringArgument()
-  String other;
+  String? other;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false, allowTrailingArguments: false)
 class TestDisallowTrailingArguments extends SmartArg {
   @StringArgument()
-  String name;
+  String? name;
 
   @StringArgument()
-  String other;
+  String? other;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestAllowTrailingArguments extends SmartArg {
   @StringArgument()
-  String name;
+  String? name;
 
   @StringArgument()
-  String other;
+  String? other;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestStackedBooleanArguments extends SmartArg {
   @BooleanArgument(short: 'a')
-  bool avalue;
+  bool? avalue;
 
   @BooleanArgument(short: 'b')
-  bool bvalue;
+  bool? bvalue;
 
   @BooleanArgument(short: 'c')
-  bool cvalue;
+  bool? cvalue;
 
   @BooleanArgument(short: 'd')
-  bool dvalue;
+  bool? dvalue;
 }
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestNoKey extends SmartArg {
   @StringArgument(long: false)
-  String long;
+  String? long;
 }
 
 @SmartArg.reflectable
@@ -255,19 +257,20 @@ class TestArgumentGroups extends SmartArg {
     afterHelp: 'After personalization arguments',
   )
   @StringArgument(help: 'Name of person to say hello to')
-  String name;
+  String? name;
 
   @StringArgument(help: 'Greeting to use when greeting the person')
-  String greeting;
+  String? greeting;
 
   @Group(name: 'CONFIGURATION')
   @IntegerArgument(help: 'How many times do you wish to greet the person?')
   int count = 1;
 }
 
-String whatExecuted;
+String? whatExecuted;
 
 void main() {
+  initializeReflectable();
   group('argument parsing/assignment', () {
     test('basic arguments', () {
       final args = TestSimple()
@@ -296,7 +299,7 @@ void main() {
       expect(args.fvalue is File, true);
       expect(args.dirvalue is Directory, true);
       expect(args.checkingCamelToDash, 'yes-it-works');
-      expect(args.extras.length, 2);
+      expect(args.extras!.length, 2);
     });
 
     test('--no-bvalue', () {
@@ -470,7 +473,7 @@ void main() {
 
     test('enough extras', () {
       final args = TestMinimumMaximumExtras()..parse(['extra1']);
-      expect(args.extras.length, 1);
+      expect(args.extras!.length, 1);
     });
 
     test('too many extras', () {
@@ -489,8 +492,8 @@ void main() {
           ..parse(['--name=John', 'hello.txt', '--other=Jack']);
         expect(args.name, 'John');
         expect(args.other, 'Jack');
-        expect(args.extras.length, 1);
-        expect(args.extras.contains('hello.txt'), true);
+        expect(args.extras!.length, 1);
+        expect(args.extras!.contains('hello.txt'), true);
       });
 
       test('when turned off trailing arguments become extras', () {
@@ -498,9 +501,9 @@ void main() {
           ..parse(['--name=John', 'hello.txt', '--other=Jack']);
         expect(args.name, 'John');
         expect(args.other, null);
-        expect(args.extras.length, 2);
-        expect(args.extras.contains('hello.txt'), true);
-        expect(args.extras.contains('--other=Jack'), true);
+        expect(args.extras!.length, 2);
+        expect(args.extras!.contains('hello.txt'), true);
+        expect(args.extras!.contains('--other=Jack'), true);
       });
     });
 
@@ -528,9 +531,9 @@ void main() {
           ..parse(['--name=John', '--', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, null);
-        expect(args.extras.length, 2);
-        expect(args.extras.contains('--other=Jack'), true);
-        expect(args.extras.contains('Doe'), true);
+        expect(args.extras!.length, 2);
+        expect(args.extras!.contains('--other=Jack'), true);
+        expect(args.extras!.contains('Doe'), true);
       });
 
       test('set to null but try to use', () {
@@ -549,8 +552,8 @@ void main() {
           ..parse(['--name=John', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, 'Jack');
-        expect(args.extras.length, 1);
-        expect(args.extras.contains('Doe'), true);
+        expect(args.extras!.length, 1);
+        expect(args.extras!.contains('Doe'), true);
       });
 
       test('set to --args', () {
@@ -558,9 +561,9 @@ void main() {
           ..parse(['--name=John', '--args', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, null);
-        expect(args.extras.length, 2);
-        expect(args.extras.contains('--other=Jack'), true);
-        expect(args.extras.contains('Doe'), true);
+        expect(args.extras!.length, 2);
+        expect(args.extras!.contains('--other=Jack'), true);
+        expect(args.extras!.contains('Doe'), true);
       });
 
       test('set to --args but using mixed case for argument terminator', () {
@@ -568,9 +571,9 @@ void main() {
           ..parse(['--name=John', '--ArGS', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, null);
-        expect(args.extras.length, 2);
-        expect(args.extras.contains('--other=Jack'), true);
-        expect(args.extras.contains('Doe'), true);
+        expect(args.extras!.length, 2);
+        expect(args.extras!.contains('--other=Jack'), true);
+        expect(args.extras!.contains('Doe'), true);
       });
 
       test('set to --args but not used', () {
@@ -578,8 +581,8 @@ void main() {
           ..parse(['--name=John', '--other=Jack', 'Doe']);
         expect(args.name, 'John');
         expect(args.other, 'Jack');
-        expect(args.extras.length, 1);
-        expect(args.extras.contains('Doe'), true);
+        expect(args.extras!.length, 1);
+        expect(args.extras!.contains('Doe'), true);
       });
     });
 
@@ -758,9 +761,9 @@ void main() {
       final args = TestHelpArgument()
         ..parse(['-?', '--bad-argument1', '-b', 'hello']);
       expect(args.help, true);
-      expect(args.extras.contains('--bad-argument1'), true);
-      expect(args.extras.contains('-b'), true);
-      expect(args.extras.contains('hello'), true);
+      expect(args.extras!.contains('--bad-argument1'), true);
+      expect(args.extras!.contains('-b'), true);
+      expect(args.extras!.contains('hello'), true);
     });
 
     test('extended help with null throws an error', () {

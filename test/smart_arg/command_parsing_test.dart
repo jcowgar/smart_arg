@@ -2,13 +2,15 @@ import 'package:test/test.dart';
 
 import 'package:smart_arg/smart_arg.dart';
 
-String whatExecuted;
+import '../smart_arg_test.reflectable.dart';
+
+String? whatExecuted;
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false, description: 'put command')
 class PutCommand extends SmartArgCommand {
   @StringArgument()
-  String filename;
+  String? filename;
 
   @override
   void execute(SmartArg parentArguments) {
@@ -20,7 +22,7 @@ class PutCommand extends SmartArgCommand {
 @Parser(exitOnFailure: false, description: 'get command')
 class GetCommand extends SmartArgCommand {
   @StringArgument()
-  String filename;
+  String? filename;
 
   @override
   void execute(SmartArg parentArguments) {
@@ -32,16 +34,17 @@ class GetCommand extends SmartArgCommand {
 @Parser(exitOnFailure: false)
 class TestSimpleCommand extends SmartArg {
   @BooleanArgument(short: 'v')
-  bool verbose;
+  bool? verbose;
 
   @Command(help: 'Put a file on a remote host')
-  PutCommand put;
+  PutCommand? put;
 
   @Command(help: 'Get a file from a remote host')
-  GetCommand get;
+  GetCommand? get;
 }
 
 void main() {
+  initializeReflectable();
   group('parsing', () {
     group('commands', () {
       setUp(() {

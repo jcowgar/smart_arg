@@ -1,29 +1,34 @@
 import 'dart:io';
+
 import 'package:smart_arg/smart_arg.dart';
+
 import 'readme_example.reflectable.dart';
 
 @SmartArg.reflectable
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
   @StringArgument(
-      help: 'Name of person to say hello to',
-      environmentVariable:
-          "GREETING_NAME") //Environment Variable will be used if defined and not otherwise specified
+    help: 'Name of person to say hello to',
+    //Environment Variable will be used if defined and not otherwise specified
+    environmentVariable: "GREETING_NAME",
+  )
   String name = 'World'; // Default to World
 
   @StringArgument(
-      help: 'Message to say to person',
-      mustBeOneOf: ['Hello', 'Goodbye'],
-      environmentVariable: "GREETING_TYPE")
+    help: 'Message to say to person',
+    mustBeOneOf: ['Hello', 'Goodbye'],
+    environmentVariable: "GREETING_TYPE",
+  )
   String greeting = 'Hello'; // Default to Hello
 
   @IntegerArgument(
-      help: 'Number of times to greet the person',
-      isRequired: true,
-      minimum: 1,
-      maximum: 100,
-      environmentVariable: "GREETING_COUNT")
-  int count;
+    help: 'Number of times to greet the person',
+    isRequired: true,
+    minimum: 1,
+    maximum: 100,
+    environmentVariable: "GREETING_COUNT",
+  )
+  late int count;
 
   @HelpArgument()
   bool help = false;

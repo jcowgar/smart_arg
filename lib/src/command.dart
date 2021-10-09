@@ -2,9 +2,9 @@ import 'argument.dart';
 
 class Command extends Argument {
   const Command({
-    String short,
+    String? short,
     dynamic long,
-    String help,
+    String? help,
   }) : super(
           short: short,
           long: long,
@@ -12,5 +12,5 @@ class Command extends Argument {
         );
 
   @override
-  void handleValue(String key, value) {}
+  void handleValue(String? key, value) {}
 }

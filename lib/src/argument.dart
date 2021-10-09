@@ -13,7 +13,7 @@ abstract class Argument {
   ///
   /// With the above configuration, the `name` property can be set on the command
   /// line by using --name John, --name=John, -n John or -n=John.
-  final String short;
+  final String? short;
 
   /// Long key, if any, that can be used for this property.
   ///
@@ -26,7 +26,7 @@ abstract class Argument {
   final dynamic long;
 
   /// Description of the property to be used in the help output.
-  final String help;
+  final String? help;
 
   /// Is this option required?
   ///
@@ -34,10 +34,10 @@ abstract class Argument {
   /// there is an error, will be shown the help screen and if
   /// [SmartArgApp.exitOnFailure] is set to `true`, the application will exit
   /// with the error code 1.
-  final bool isRequired;
+  final bool? isRequired;
 
   /// Environment Variable, if any, that can be used for this property.
-  final String environmentVariable;
+  final String? environmentVariable;
 
   const Argument({
     this.short,
@@ -47,11 +47,11 @@ abstract class Argument {
     this.environmentVariable,
   });
 
-  List<String> specialKeys(String short, String long) {
+  List<String> specialKeys(String? short, String? long) {
     return [];
   }
 
-  dynamic handleValue(String key, dynamic value);
+  dynamic handleValue(String? key, dynamic value);
 
   bool get needsValue => true;
 

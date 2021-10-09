@@ -9,6 +9,7 @@ void main() {
   group('FileArgument', () {
     test('emptyList', () {
       var arg = FileArgument();
+      // ignore: unnecessary_type_check
       expect(arg.emptyList is List, true);
 
       // Make sure we can add a Directory type directly

@@ -17,15 +17,15 @@ class BooleanArgument extends Argument {
   /// | empty          | `verbose` will be true  |
   /// | `--verbose`    | `verbose` will be true  |
   /// | `--no-verbose` | `verbose` will be false |
-  final bool isNegateable;
+  final bool? isNegateable;
 
   const BooleanArgument({
     this.isNegateable,
-    String short,
+    String? short,
     dynamic long,
-    String help,
+    String? help,
     bool isRequired = false,
-    String environmentVariable,
+    String? environmentVariable,
   }) : super(
             short: short,
             long: long,
@@ -34,7 +34,7 @@ class BooleanArgument extends Argument {
             environmentVariable: environmentVariable);
 
   @override
-  List<String> specialKeys(String short, String long) {
+  List<String> specialKeys(String? short, String? long) {
     if (isNegateable == true && long != null) {
       return ['no-$long'];
     }
@@ -46,7 +46,7 @@ class BooleanArgument extends Argument {
   bool get needsValue => false;
 
   @override
-  bool handleValue(String key, dynamic value) => !key.startsWith('no-');
+  bool handleValue(String? key, dynamic value) => !key!.startsWith('no-');
 
   List<bool> get emptyList => [];
 }

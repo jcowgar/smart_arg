@@ -14,25 +14,24 @@ class FileArgument extends Argument {
   final bool mustExist;
 
   const FileArgument({
-    String short,
+    String? short,
     dynamic long,
-    String help,
-    bool isRequired,
+    String? help,
+    bool? isRequired,
     this.mustExist = false,
-    String environmentVariable,
+    String? environmentVariable,
   }) : super(
-            short: short,
-            long: long,
-            help: help,
-            isRequired: isRequired,
-            environmentVariable: environmentVariable);
+          short: short,
+          long: long,
+          help: help,
+          isRequired: isRequired,
+          environmentVariable: environmentVariable,
+        );
 
   @override
-  File handleValue(String key, dynamic value) {
-    var result;
-
+  File handleValue(String? key, dynamic value) {
     var normalizedAbsolutePath = path.normalize(path.absolute(value));
-    result = File(normalizedAbsolutePath);
+    final File result = File(normalizedAbsolutePath);
 
     if (mustExist) {
       if (result.existsSync() == false) {
