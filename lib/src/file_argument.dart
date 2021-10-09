@@ -21,18 +21,17 @@ class FileArgument extends Argument {
     this.mustExist = false,
     String environmentVariable,
   }) : super(
-            short: short,
-            long: long,
-            help: help,
-            isRequired: isRequired,
-            environmentVariable: environmentVariable);
+          short: short,
+          long: long,
+          help: help,
+          isRequired: isRequired,
+          environmentVariable: environmentVariable,
+        );
 
   @override
   File handleValue(String key, dynamic value) {
-    var result;
-
     var normalizedAbsolutePath = path.normalize(path.absolute(value));
-    result = File(normalizedAbsolutePath);
+    final File result = File(normalizedAbsolutePath);
 
     if (mustExist) {
       if (result.existsSync() == false) {

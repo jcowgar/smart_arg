@@ -9,10 +9,9 @@ import 'group.dart';
 import 'help_argument.dart';
 import 'mirror_argument_pair.dart';
 import 'parser.dart';
+import 'reflector.dart';
 import 'smart_arg_command.dart';
 import 'string_utils.dart';
-
-import 'reflector.dart';
 
 bool _nonNull(dynamic value) {
   return value != null;
@@ -61,7 +60,7 @@ class SmartArg {
     _mirrorParameterPairs = [];
 
     {
-      var currentGroup;
+      Group currentGroup;
 
       for (final mirror in instanceMirror.type.declarations.values
           .where((p) => p is VariableMirror && p.isPrivate == false)) {
@@ -170,15 +169,17 @@ class SmartArg {
     final keyPadWidth = min(maxKeyLenAllowed, maxKeyLen + 1);
 
     {
-      final trailingHelp = (Group group) {
+      void trailingHelp(Group group) {
         if (group?.afterHelp != null) {
           lines.add('');
           lines.add(indent(
-              hardWrap(group.afterHelp, lineWidth - lineIndent), lineIndent));
+            hardWrap(group.afterHelp, lineWidth - lineIndent),
+            lineIndent,
+          ));
         }
-      };
+      }
 
-      var currentGroup;
+      Group currentGroup;
 
       for (var i = 0; i < helpKeys.length; i++) {
         final thisGroup = helpGroups[i];

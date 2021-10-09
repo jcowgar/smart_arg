@@ -21,18 +21,17 @@ class DirectoryArgument extends Argument {
     this.mustExist = false,
     String environmentVariable,
   }) : super(
-            short: short,
-            long: long,
-            help: help,
-            isRequired: isRequired,
-            environmentVariable: environmentVariable);
+          short: short,
+          long: long,
+          help: help,
+          isRequired: isRequired,
+          environmentVariable: environmentVariable,
+        );
 
   @override
   Directory handleValue(String key, dynamic value) {
-    var result;
-
     var normalizedAbsolutePath = path.normalize(path.absolute(value));
-    result = Directory(normalizedAbsolutePath);
+    final Directory result = Directory(normalizedAbsolutePath);
 
     if (mustExist) {
       if (result.existsSync() == false) {

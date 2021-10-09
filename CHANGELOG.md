@@ -3,6 +3,14 @@
 _UNRELEASED_
 
 - Added support for reading arguments from Environment Variables if not provided during parsing
+- Upgraded dev_dependencies
+  - test to `^1.18.2`
+  - build_runner to `^2.1.4`
+  - build_test to `^2.1.4`
+  - Replaced pandantic with lints `^1.0.1`
+- Upgraded dependencies
+  - reflectable to `3.0.4`
+- Fixed various linter warnings
 
 ## 1.1.2
 
