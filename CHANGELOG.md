@@ -13,6 +13,7 @@
 - Upgraded dependencies
   - reflectable to `3.0.4`
 - Fixed various linter warnings
+- Fixed support for non-annotated properties on commands and SmartArgs
 - Upgraded for Null Type Safety
 
 ## 1.1.2
