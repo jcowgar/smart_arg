@@ -22,7 +22,7 @@ bool _notBlank(String? value) => _nonNull(value) && value!.trim().isNotEmpty;
 // var abc = [] turns out to be a List<dynamic> which is not
 // as safe as List<String> abc = [] for example.
 //
-// This file uses a lot of lists, therefore the\
+// This file uses a lot of lists, therefore the
 // omit_local_variable_types linting rule is disabled globally
 // for this file.
 //
@@ -39,6 +39,12 @@ class SmartArg {
   // Public API
   //
 
+  /// The environment for [SmartArg] as a map from string key to string value.
+  ///
+  /// The map is unmodifiable, and its content is retrieved from the operating
+  /// system [Platform.environment] on unless provided otherwise.
+  late Map<String, String> _environment = Platform.environment;
+
   /// List of extras supplied on the command line.
   ///
   /// Extras are anything supplied on the command line that was not an option.
@@ -52,7 +58,7 @@ class SmartArg {
         instanceMirror.type.metadata.firstWhere((m) => m is Parser) as Parser?;
 
     // Build an easy to use lookup for arguments on the command line
-    // to their cooresponding Parameter configurations.
+    // to their corresponding Parameter configurations.
     _values = {};
     _commands = {};
     _mirrorParameterPairs = [];
@@ -455,7 +461,7 @@ class SmartArg {
       var argumentName = mpp.displayKey;
       var envVar = mpp.argument.environmentVariable;
       if (_isFalse(_argumentWasSet(argumentName)) && _notBlank(envVar)) {
-        String? envVarValue = Platform.environment[envVar!];
+        String? envVarValue = _environment[envVar!];
         if (_notBlank(envVarValue)) {
           _trySetValue(instanceMirror, argumentName, envVarValue?.trim());
         }
@@ -497,6 +503,11 @@ class SmartArg {
   void _resetParser() {
     _wasSet = {};
     _extras = [];
+  }
+
+  /// Sets the environment map to be used during argument parsing
+  void withEnvironment(Map<String, String> environment) {
+    _environment = environment;
   }
 
   /// Invoked before a command is parsed

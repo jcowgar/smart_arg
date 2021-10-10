@@ -1,9 +1,8 @@
 import 'dart:io';
+
 import 'package:path/path.dart' as path;
-
-import 'package:test/test.dart';
-
 import 'package:smart_arg/smart_arg.dart';
+import 'package:test/test.dart';
 
 import '../smart_arg_test.reflectable.dart';
 
@@ -240,7 +239,7 @@ class TestNoKey extends SmartArg {
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
 class TestWithDefaultValue extends SmartArg {
-  @StringArgument()
+  @StringArgument(environmentVariable: 'TEST_HELLO')
   String long = 'hello';
 }
 
@@ -332,6 +331,9 @@ void main() {
     });
 
     group('default value', () {
+      var environmentValue = 'Hello from the Environment';
+      final Map<String, String> environment = {'TEST_HELLO': environmentValue};
+
       test('default value exists if no argument given', () {
         final args = TestWithDefaultValue()..parse([]);
         expect(args.long, 'hello');
@@ -339,6 +341,20 @@ void main() {
 
       test('value supplied overrides default value', () {
         final args = TestWithDefaultValue()..parse(['--long', 'goodbye']);
+        expect(args.long, 'goodbye');
+      });
+
+      test('environment variable supplied overrides default value', () {
+        final args = TestWithDefaultValue()
+          ..withEnvironment(environment)
+          ..parse([]);
+        expect(args.long, environmentValue);
+      });
+
+      test('value supplied overrides environment value', () {
+        final args = TestWithDefaultValue()
+          ..withEnvironment(environment)
+          ..parse(['--long', 'goodbye']);
         expect(args.long, 'goodbye');
       });
     });
