@@ -15,8 +15,9 @@ import 'smart_arg_command.dart';
 import 'string_utils.dart';
 
 bool _nonNull(dynamic value) => value != null;
-
 bool _notBlank(String? value) => _nonNull(value) && value!.trim().isNotEmpty;
+bool _isFalse(dynamic value) => value == false;
+bool _isTrue(dynamic value) => value == true;
 
 // Local type is needed for strict type checking in lists.
 // var abc = [] turns out to be a List<dynamic> which is not
@@ -443,14 +444,6 @@ class SmartArg {
 
   bool _argumentWasSet(String? argumentName) {
     return _wasSet.contains(argumentName);
-  }
-
-  bool _isFalse(dynamic value) {
-    return value == false;
-  }
-
-  bool _isTrue(dynamic value) {
-    return value == true;
   }
 
   void _validate() {
