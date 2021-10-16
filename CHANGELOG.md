@@ -5,6 +5,7 @@
     - Upgraded reflectable to `3.0.4`
 - Fixed:
     - Linter warnings
+    - Allow properties of classes extending `SmartArg` to not require an `Argument` annotation
 - Miscellaneous:
     - Upgraded dev_dependencies
         - test to `^1.18.2`

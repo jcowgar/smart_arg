@@ -244,6 +244,17 @@ class TestWithDefaultValue extends SmartArg {
 }
 
 @SmartArg.reflectable
+@Parser(exitOnFailure: false)
+class TestWithNonAnnotationValue extends SmartArg {
+  @StringArgument()
+  String long = 'hello';
+
+  final String noAnnotation = 'Not Reflected';
+  String eagerProperty = 'Eager';
+  late String lateProperty = '$eagerProperty should be late';
+}
+
+@SmartArg.reflectable
 @Parser(exitOnFailure: false, extendedHelp: [ExtendedHelp(null)])
 class TestBadExtendedHelp extends SmartArg {}
 
@@ -340,6 +351,24 @@ void main() {
       test('value supplied overrides default value', () {
         final args = TestWithDefaultValue()..parse(['--long', 'goodbye']);
         expect(args.long, 'goodbye');
+      });
+    });
+
+    group('non-annotated values', () {
+      test('can exist within a command', () {
+        final args = TestWithNonAnnotationValue()..parse([]);
+        expect(args.long, 'hello');
+        expect(args.lateProperty, 'Eager should be late');
+        expect(args.noAnnotation, 'Not Reflected');
+      });
+
+      test('properties can be late for lazy evaluation', () {
+        final args = TestWithNonAnnotationValue()..parse([]);
+        expect(args.eagerProperty, 'Eager');
+        args.eagerProperty = 'Now Late';
+        expect(args.lateProperty, 'Now Late should be late');
+        args.eagerProperty = 'Back to Eager';
+        expect(args.lateProperty, 'Now Late should be late');
       });
     });
 
