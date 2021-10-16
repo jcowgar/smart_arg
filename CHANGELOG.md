@@ -3,6 +3,11 @@
 - Breaking:
     - Upgraded for Null Type Safety. Requires minimum Dart version `2.12.0`
     - Upgraded reflectable to `3.0.4`
+- Added
+    - Extra methods to `SmartArg` for handling lifecycle operations. Useful for DI instantiation
+        - `beforeCommandParse`
+        - `beforeCommandExecute`
+        - `afterCommandExecute`
 - Fixed:
     - Linter warnings
     - Allow properties of classes extending `SmartArg` to not require an `Argument` annotation
