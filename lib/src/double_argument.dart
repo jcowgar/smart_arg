@@ -2,16 +2,16 @@ import 'argument.dart';
 
 class DoubleArgument extends Argument {
   /// Minimum number allowed, if any.
-  final double minimum;
+  final double? minimum;
 
   /// Maximum number allowed, if any.
-  final double maximum;
+  final double? maximum;
 
   const DoubleArgument({
-    String short,
+    String? short,
     dynamic long,
-    String help,
-    bool isRequired,
+    String? help,
+    bool? isRequired,
     this.minimum,
     this.maximum,
   }) : super(
@@ -22,14 +22,14 @@ class DoubleArgument extends Argument {
         );
 
   @override
-  double handleValue(String key, dynamic value) {
+  double? handleValue(String? key, dynamic value) {
     var result = double.tryParse(value);
 
-    if (minimum != null && result < minimum) {
+    if (minimum != null && result! < minimum!) {
       throw ArgumentError('$key must be at least $minimum');
     }
 
-    if (maximum != null && result > maximum) {
+    if (maximum != null && result! > maximum!) {
       throw ArgumentError('$key must be at most $maximum');
     }
 

@@ -20,22 +20,22 @@ String camelToDash(String value) {
 class MirrorParameterPair {
   final VariableMirror mirror;
   final Argument argument;
-  final Group group;
+  final Group? group;
 
-  String displayKey;
+  String? displayKey;
 
   MirrorParameterPair(this.mirror, this.argument, [this.group]);
 
-  List<String> keys(Parser parser) {
+  List<String?> keys(Parser? parser) {
     // Local type is needed, otherwise result winds up being a
     // List<dynamic> which is incompatible with the return type.
     // Therefore, ignore the suggestion from dartanalyzer
     //
     // ignore: omit_local_variable_types
-    List<String> result = [];
+    List<String?> result = [];
 
-    String long;
-    String short;
+    String? long;
+    String? short;
 
     if (argument.short != null) {
       short = argument.short;
@@ -43,7 +43,7 @@ class MirrorParameterPair {
       result.add('-$short');
     }
 
-    if (argument.long == null && parser.strict != true) {
+    if (argument.long == null && parser!.strict != true) {
       long = camelToDash(mirror.simpleName);
 
       result.add(long);

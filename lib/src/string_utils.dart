@@ -6,7 +6,7 @@ String replaceLineEndings(String s, String replaceWith) {
 }
 
 /// Gets the EOL character of [s]
-String endOfLineOf(String s) {
+String? endOfLineOf(String s) {
   final match = RegExp(r'\r\n|[\r\n]').firstMatch(s);
   if (match == null) {
     return null;
@@ -16,7 +16,7 @@ String endOfLineOf(String s) {
 }
 
 /// Split text by EOL character
-List<String> splitByEOL(s) {
+List<String>? splitByEOL(s) {
   return s.split(RegExp(r'\r\n|[\r\n]'));
 }
 
@@ -50,5 +50,5 @@ String hardWrap(String s, [int columns = 80]) {
 /// Indent [s] by [indentCount] columns using [withChar]
 String indent(String s, int indentCount, [String withChar = ' ']) {
   final eol = endOfLineOf(s) ?? '\n';
-  return splitByEOL(s).map((v) => (withChar * indentCount) + v).join(eol);
+  return splitByEOL(s)!.map((v) => (withChar * indentCount) + v).join(eol);
 }
