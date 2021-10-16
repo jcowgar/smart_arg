@@ -19,11 +19,13 @@ class DirectoryArgument extends Argument {
     String? help,
     bool? isRequired,
     this.mustExist = false,
+    String? environmentVariable,
   }) : super(
           short: short,
           long: long,
           help: help,
           isRequired: isRequired,
+          environmentVariable: environmentVariable,
         );
 
   @override

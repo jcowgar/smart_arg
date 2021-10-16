@@ -245,6 +245,13 @@ class TestWithDefaultValue extends SmartArg {
 
 @SmartArg.reflectable
 @Parser(exitOnFailure: false)
+class TestWithEnvironmentValue extends SmartArg {
+  @StringArgument(environmentVariable: 'TEST_HELLO')
+  String long = 'hello';
+}
+
+@SmartArg.reflectable
+@Parser(exitOnFailure: false)
 class TestWithNonAnnotationValue extends SmartArg {
   @StringArgument()
   String long = 'hello';
@@ -350,6 +357,32 @@ void main() {
 
       test('value supplied overrides default value', () {
         final args = TestWithDefaultValue()..parse(['--long', 'goodbye']);
+        expect(args.long, 'goodbye');
+      });
+    });
+
+    group('environment value', () {
+      var environmentValue = 'Hello from the Environment';
+      final Map<String, String> environment = {'TEST_HELLO': environmentValue};
+
+      test('default value exists if no value found in environment', () {
+        final args = TestWithEnvironmentValue()
+          ..withEnvironment({})
+          ..parse([]);
+        expect(args.long, 'hello');
+      });
+
+      test('environment variable supplied overrides default value', () {
+        final args = TestWithEnvironmentValue()
+          ..withEnvironment(environment)
+          ..parse([]);
+        expect(args.long, environmentValue);
+      });
+
+      test('value supplied overrides environment value', () {
+        final args = TestWithEnvironmentValue()
+          ..withEnvironment(environment)
+          ..parse(['--long', 'goodbye']);
         expect(args.long, 'goodbye');
       });
     });

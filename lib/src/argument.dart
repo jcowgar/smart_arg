@@ -36,11 +36,15 @@ abstract class Argument {
   /// with the error code 1.
   final bool? isRequired;
 
+  /// Environment Variable, if any, that can be used for this property.
+  final String? environmentVariable;
+
   const Argument({
     this.short,
     this.long,
     this.help,
     this.isRequired = false,
+    this.environmentVariable,
   });
 
   List<String> specialKeys(String? short, String? long) {

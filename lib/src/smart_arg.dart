@@ -14,6 +14,17 @@ import 'reflector.dart';
 import 'smart_arg_command.dart';
 import 'string_utils.dart';
 
+bool _isFalse(dynamic value) => value == false;
+
+bool _isTrue(dynamic value) => value == true;
+
+bool _isNull(dynamic value) => value == null;
+
+bool _isNotNull(dynamic value) => _isFalse(_isNull(value));
+
+bool _isNotBlank(String? value) =>
+    _isNotNull(value) && value!.trim().isNotEmpty;
+
 // Local type is needed for strict type checking in lists.
 // var abc = [] turns out to be a List<dynamic> which is not
 // as safe as List<String> abc = [] for example.
@@ -40,6 +51,12 @@ class SmartArg {
   /// Extras are anything supplied on the command line that was not an option.
   List<String>? get extras => _extras;
 
+  /// The environment for [SmartArg] as a map from string key to string value.
+  ///
+  /// The map is unmodifiable, and its content is retrieved from the operating
+  /// system [Platform.environment] on unless provided otherwise.
+  late Map<String, String> _environment = Platform.environment;
+
   SmartArg() {
     final instanceMirror = reflectable.reflect(this);
 
@@ -57,7 +74,7 @@ class SmartArg {
       Group? currentGroup;
 
       for (final mirror in instanceMirror.type.declarations.values
-          .where((p) => p is VariableMirror && p.isPrivate == false)) {
+          .where((p) => p is VariableMirror && _isFalse(p.isPrivate))) {
         currentGroup =
             mirror.metadata.firstWhereOrNull((m) => m is Group) as Group? ??
                 currentGroup;
@@ -99,7 +116,7 @@ class SmartArg {
         _validate();
       }
     } on ArgumentError catch (e) {
-      if (_app?.exitOnFailure == true) {
+      if (_isTrue(_app?.exitOnFailure)) {
         print(e.toString());
         print('');
         print(usage());
@@ -114,7 +131,7 @@ class SmartArg {
   String usage() {
     List<String?> lines = [];
 
-    if (_app?.description != null) {
+    if (_isNotNull(_app?.description)) {
       lines.add(_app!.description);
       lines.add('');
     }
@@ -124,7 +141,7 @@ class SmartArg {
     List<List<String>> helpDescriptions = [];
 
     final arguments =
-        _mirrorParameterPairs.where((v) => v.argument is Command == false);
+        _mirrorParameterPairs.where((v) => _isFalse(v.argument is Command));
     final commands = _mirrorParameterPairs.where((v) => v.argument is Command);
 
     if (arguments.isNotEmpty) {
@@ -141,8 +158,12 @@ class SmartArg {
           helpLines.add('[REQUIRED]');
         }
 
-        helpLines.addAll(mpp.argument.additionalHelpLines);
+        String? envVar = mpp.argument.environmentVariable;
+        if (_isNotBlank(envVar)) {
+          helpLines.add('[Environment Variable: \$$envVar]');
+        }
 
+        helpLines.addAll(mpp.argument.additionalHelpLines);
         helpDescriptions.add(helpLines);
       }
     }
@@ -162,7 +183,7 @@ class SmartArg {
 
     {
       void trailingHelp(Group? group) {
-        if (group?.afterHelp != null) {
+        if (_isNotNull(group?.afterHelp)) {
           lines.add('');
           lines.add(indent(
             hardWrap(group!.afterHelp!, lineWidth - lineIndent),
@@ -179,13 +200,13 @@ class SmartArg {
         if (thisGroup != currentGroup) {
           trailingHelp(currentGroup);
 
-          if (currentGroup != null) {
+          if (_isNotNull(currentGroup)) {
             lines.add('');
           }
 
           lines.add(thisGroup!.name);
 
-          if (thisGroup.beforeHelp != null) {
+          if (_isNotNull(thisGroup.beforeHelp)) {
             lines.add(indent(
                 hardWrap(thisGroup.beforeHelp!, lineWidth - lineIndent),
                 lineIndent));
@@ -232,15 +253,15 @@ class SmartArg {
       }
     }
 
-    if (_app?.extendedHelp != null) {
+    if (_isNotNull(_app?.extendedHelp)) {
       for (final eh in _app!.extendedHelp!) {
-        if (eh.help == null) {
+        if (_isNull(eh.help)) {
           throw StateError('Help.help must be set');
         }
 
         lines.add('');
 
-        if (eh.header != null) {
+        if (_isNotNull(eh.header)) {
           lines.add(hardWrap(eh.header!, lineWidth));
           lines.add(
               indent(hardWrap(eh.help!, lineWidth - lineIndent), lineIndent));
@@ -303,7 +324,7 @@ class SmartArg {
       if (argument.toLowerCase() == _app!.argumentTerminator?.toLowerCase()) {
         _extras!.addAll(expandedArguments.skip(argumentIndex));
         return true;
-      } else if (argument.startsWith('-') == false) {
+      } else if (_isFalse(argument.startsWith('-'))) {
         if (_commands.containsKey(argument)) {
           final command = _commands[argument]!;
           final commandArguments = arguments.skip(argumentIndex).toList();
@@ -315,7 +336,7 @@ class SmartArg {
           // Was not an argument, must be an extra
           _extras!.add(argument);
 
-          if (_app!.allowTrailingArguments == false) {
+          if (_isFalse(_app!.allowTrailingArguments)) {
             _extras!.addAll(expandedArguments.skip(argumentIndex));
             return true;
           }
@@ -335,11 +356,11 @@ class SmartArg {
 
       // Find our argument configuration
       var argumentConfiguration = _values[argumentName];
-      if (argumentConfiguration == null) {
+      if (_isNull(argumentConfiguration)) {
         throw ArgumentError('$originalArgument is invalid');
       }
 
-      if (argumentConfiguration.argument.needsValue && !hasValueViaEqual) {
+      if (argumentConfiguration!.argument.needsValue && !hasValueViaEqual) {
         if (argumentIndex >= expandedArguments.length) {
           throw ArgumentError(
               '${argumentConfiguration.displayKey} expects a value but none was supplied.');
@@ -383,7 +404,7 @@ class SmartArg {
     // There is no way of determining if a class variable is a list or not through
     // introspection, therefore we try to add the value as a list, or append to the
     // list first. If that fails, we assume it is not a list :-/
-    if (instanceValue == null) {
+    if (_isNull(instanceValue)) {
       try {
         instanceValue = (argumentConfiguration.argument as dynamic).emptyList;
         (instanceValue as List).add(value);
@@ -426,12 +447,27 @@ class SmartArg {
     }
   }
 
+  bool _argumentWasSet(String? argumentName) {
+    return _wasSet.contains(argumentName);
+  }
+
   void _validate() {
     // Check to see if we have any required arguments missing
     final List<String?> isMissing = [];
+    final instanceMirror = reflectable.reflect(this);
+
     for (var mpp in _mirrorParameterPairs) {
-      if (mpp.argument.isRequired == true &&
-          _wasSet.contains(mpp.displayKey) == false) {
+      var argumentName = mpp.displayKey;
+      final String? envVar = mpp.argument.environmentVariable;
+      if (_isFalse(_argumentWasSet(argumentName)) && _isNotBlank(envVar)) {
+        String? envVarValue = _environment[envVar];
+        if (_isNotBlank(envVarValue)) {
+          _trySetValue(instanceMirror, argumentName, envVarValue!.trim());
+        }
+      }
+
+      if (_isTrue(mpp.argument.isRequired) &&
+          _isFalse(_argumentWasSet(argumentName))) {
         isMissing.add(mpp.displayKey);
       }
     }
@@ -441,10 +477,11 @@ class SmartArg {
           'missing required arguments: ${isMissing.join(', ')}');
     }
 
-    if (_app!.minimumExtras != null && extras!.length < _app!.minimumExtras!) {
+    if (_isNotNull(_app!.minimumExtras) &&
+        extras!.length < _app!.minimumExtras!) {
       throw ArgumentError(
           'expecting at least ${_app!.minimumExtras} free form arguments but ${extras!.length} was supplied');
-    } else if (_app!.maximumExtras != null &&
+    } else if (_isNotNull(_app!.maximumExtras) &&
         extras!.length > _app!.maximumExtras!) {
       throw ArgumentError(
           'expecting at most ${_app!.maximumExtras} free form arguments but ${extras!.length} was supplied');
@@ -466,6 +503,11 @@ class SmartArg {
   void _resetParser() {
     _wasSet = {};
     _extras = [];
+  }
+
+  /// Sets the environment map to be used during argument parsing
+  void withEnvironment(Map<String, String> environment) {
+    _environment = environment;
   }
 
   /// Invoked before a command is parsed

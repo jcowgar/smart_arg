@@ -8,6 +8,7 @@
         - `beforeCommandParse`
         - `beforeCommandExecute`
         - `afterCommandExecute`
+    - Support for reading arguments from Environment Variables if not provided during parsing
 - Fixed:
     - Linter warnings
     - Allow properties of classes extending `SmartArg` to not require an `Argument` annotation

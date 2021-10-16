@@ -38,12 +38,17 @@ import 'readme_example.reflectable.dart';
 @SmartArg.reflectable
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
-  @StringArgument(help: 'Name of person to say hello to')
+  @StringArgument(
+    help: 'Name of person to say hello to',
+    //Environment Variable will be used if defined and not otherwise specified
+    environmentVariable: "GREETING_NAME",
+  )
   String name = 'World'; // Default to World
 
   @StringArgument(
     help: 'Message to say to person',
     mustBeOneOf: ['Hello', 'Goodbye'],
+    environmentVariable: 'GREETING_TYPE',
   )
   String greeting = 'Hello'; // Default to Hello
 
@@ -52,6 +57,7 @@ class Args extends SmartArg {
     isRequired: true,
     minimum: 1,
     maximum: 100,
+    environmentVariable: 'GREETING_COUNT',
   )
   late int count;
 
@@ -83,12 +89,14 @@ The help output of the above example is:
 
 ```
 Hello World application
-
   --name         Name of person to say hello to
-  --greeting     Greeting text to use
+                 [Environment Variable: $GREETING_NAME]
+  --greeting     Message to say to person
+                 [Environment Variable: $GREETING_TYPE]
                  must be one of Hello, Goodbye
   --count        Number of times to greet the person
                  [REQUIRED]
+                 [Environment Variable: $GREETING_COUNT]
   -h, --help, -? Show help
 ```
 

@@ -10,11 +10,13 @@ class StringArgument extends Argument {
     String? help,
     bool? isRequired,
     this.mustBeOneOf,
+    String? environmentVariable,
   }) : super(
           short: short,
           long: long,
           help: help,
           isRequired: isRequired,
+          environmentVariable: environmentVariable,
         );
 
   @override
