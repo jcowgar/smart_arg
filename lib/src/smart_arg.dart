@@ -62,22 +62,24 @@ class SmartArg {
             mirror.metadata.firstWhereOrNull((m) => m is Group) as Group? ??
                 currentGroup;
 
-        final parameter = mirror.metadata.firstWhere((m) => m is Argument);
-        final mpp = MirrorParameterPair(
-            mirror as VariableMirror, parameter as Argument, currentGroup);
-
-        for (final key in mpp.keys(_app)) {
-          if (_values.containsKey(key)) {
-            throw StateError('$key was configured multiple times');
+        final parameter =
+            mirror.metadata.firstWhereOrNull((m) => m is Argument);
+        if (parameter != null) {
+          final mpp = MirrorParameterPair(
+            mirror as VariableMirror,
+            parameter as Argument,
+            currentGroup,
+          );
+          for (final key in mpp.keys(_app)) {
+            if (_values.containsKey(key)) {
+              throw StateError('$key was configured multiple times');
+            }
+            _values[key] = mpp;
           }
-
-          _values[key] = mpp;
-        }
-
-        _mirrorParameterPairs.add(mpp);
-
-        if (parameter is Command) {
-          _commands[mpp.displayKey] = mpp;
+          _mirrorParameterPairs.add(mpp);
+          if (parameter is Command) {
+            _commands[mpp.displayKey] = mpp;
+          }
         }
       }
     }
