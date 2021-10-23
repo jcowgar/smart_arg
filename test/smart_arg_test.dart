@@ -1,7 +1,5 @@
 library test.smart_arg;
 
-import 'smart_arg_test.reflectable.dart';
-
 import 'annotations/boolean_argument_test.dart' as boolean_argument_test;
 import 'annotations/command_test.dart' as command_test;
 import 'annotations/directory_argument_test.dart' as directory_argument_test;
@@ -13,10 +11,10 @@ import 'annotations/help_argument_test.dart' as help_argument_test;
 import 'annotations/integer_argument_test.dart' as integer_argument_test;
 import 'annotations/parse_test.dart' as parse_test;
 import 'annotations/string_argument_test.dart' as string_argument_test;
-
-import 'smart_arg/smart_arg_test.dart' as smart_arg_test;
 import 'smart_arg/command_parsing_test.dart' as command_parsing_test;
 import 'smart_arg/reflector_test.dart' as reflector_test;
+import 'smart_arg/smart_arg_test.dart' as smart_arg_test;
+import 'smart_arg_test.reflectable.dart';
 import 'string_utils_test.dart' as string_utils_test;
 
 void main() {

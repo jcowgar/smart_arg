@@ -3,28 +3,28 @@ import 'extended_help.dart';
 /// Annotation to define [SmartArg] wide properties.
 class Parser {
   /// Application description that is displayed in the help output.
-  final String description;
+  final String? description;
 
   /// Additional text to be displayed at the bottom of the help output.
   ///
   /// This can be multiline.
   ///
   /// See also [ExtendedHelp].
-  final List<ExtendedHelp> extendedHelp;
+  final List<ExtendedHelp>? extendedHelp;
 
   /// Minimum number of extras that are required for your application.
   ///
   /// An extra is anything passed on the command line that is not an option.
   ///
   /// See also [maximumExtras].
-  final int minimumExtras;
+  final int? minimumExtras;
 
   /// Maximum number of extras that are allowed for your application.
   ///
   /// An extra is anything passed on the command line that is not an option.
   ///
   /// See also [minimumExtras].
-  final int maximumExtras;
+  final int? maximumExtras;
 
   /// Exit the application with an exit code of 1 if there are argument
   /// parsing errors.
@@ -37,7 +37,7 @@ class Parser {
 
   /// If [argumentTerminator] is parsed, the rest of the arguments are
   /// considered extras.
-  final String argumentTerminator;
+  final String? argumentTerminator;
 
   /// Allow trailing argument?
   ///

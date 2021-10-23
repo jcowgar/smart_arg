@@ -22,7 +22,7 @@ class Args extends SmartArg {
     minimum: 1,
     maximum: 100,
   )
-  int count;
+  late int count;
 
   @HelpArgument()
   bool help = false;

@@ -8,10 +8,10 @@ import 'command_example.reflectable.dart';
 @Parser(description: 'get file from remote server')
 class GetCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed after downloaded?')
-  bool removeAfterGet;
+  bool? removeAfterGet;
 
   @HelpArgument()
-  bool help;
+  bool? help;
 
   @override
   void execute(SmartArg parentArguments) {
@@ -38,10 +38,10 @@ class GetCommand extends SmartArgCommand {
 @Parser(description: 'put file onto remote server')
 class PutCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed locally after downloaded?')
-  bool removeAfterPut;
+  bool? removeAfterPut;
 
   @HelpArgument()
-  bool help;
+  bool? help;
 
   @override
   void execute(SmartArg parentArguments) {
@@ -74,16 +74,16 @@ class PutCommand extends SmartArgCommand {
 )
 class Args extends SmartArg {
   @BooleanArgument(short: 'v', help: 'Verbose mode')
-  bool verbose;
+  bool? verbose;
 
   @Command(help: 'Get a file from the remote server')
-  GetCommand get;
+  GetCommand? get;
 
   @Command(help: 'Put a file on the remote server')
-  PutCommand put;
+  PutCommand? put;
 
   @HelpArgument()
-  bool help;
+  bool? help;
 }
 
 void main(List<String> arguments) {

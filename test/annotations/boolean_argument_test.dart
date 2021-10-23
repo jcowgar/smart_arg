@@ -5,6 +5,7 @@ void main() {
   group('BooleanArgument', () {
     test('emptyList', () {
       var arg = BooleanArgument();
+      // ignore: unnecessary_type_check
       expect(arg.emptyList is List, true);
 
       // Make sure we can add a bool type directly

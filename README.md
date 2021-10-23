@@ -39,10 +39,10 @@ import 'readme_example.reflectable.dart';
 @Parser(description: 'Hello World application')
 class Args extends SmartArg {
   @StringArgument(help: 'Name of person to say hello to')
-  String name = 'World';    // Default to World
+  String name = 'World'; // Default to World
 
   @StringArgument(
-    help: 'Greeting text to use',
+    help: 'Message to say to person',
     mustBeOneOf: ['Hello', 'Goodbye'],
   )
   String greeting = 'Hello'; // Default to Hello
@@ -53,7 +53,7 @@ class Args extends SmartArg {
     minimum: 1,
     maximum: 100,
   )
-  int count;
+  late int count;
 
   @HelpArgument()
   bool help = false;
@@ -68,7 +68,7 @@ void main(List<String> arguments) {
     exit(0);
   }
 
-  for (int i = 0; i < args.count; i++) {
+  for (var i = 0; i < args.count; i++) {
     print('${args.greeting}, ${args.name}!');
   }
 }
@@ -181,10 +181,10 @@ import 'command_example.reflectable.dart';
 @Parser(description: 'get file from remote server')
 class GetCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed after downloaded?')
-  bool removeAfterGet;
+  bool? removeAfterGet;
 
   @HelpArgument()
-  bool help;
+  bool? help;
 
   @override
   void execute(SmartArg parentArguments) {
@@ -211,10 +211,10 @@ class GetCommand extends SmartArgCommand {
 @Parser(description: 'put file onto remote server')
 class PutCommand extends SmartArgCommand {
   @BooleanArgument(help: 'Should the file be removed locally after downloaded?')
-  bool removeAfterPut;
+  bool? removeAfterPut;
 
   @HelpArgument()
-  bool help;
+  bool? help;
 
   @override
   void execute(SmartArg parentArguments) {
@@ -247,16 +247,16 @@ class PutCommand extends SmartArgCommand {
 )
 class Args extends SmartArg {
   @BooleanArgument(short: 'v', help: 'Verbose mode')
-  bool verbose;
+  bool? verbose;
 
   @Command(help: 'Get a file from the remote server')
-  GetCommand get;
+  GetCommand? get;
 
   @Command(help: 'Put a file on the remote server')
-  PutCommand put;
+  PutCommand? put;
 
   @HelpArgument()
-  bool help;
+  bool? help;
 }
 
 void main(List<String> arguments) {

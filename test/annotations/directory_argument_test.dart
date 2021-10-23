@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-
 import 'package:smart_arg/smart_arg.dart';
 import 'package:test/test.dart';
 
@@ -9,6 +8,7 @@ void main() {
   group('DirectoryArgument', () {
     test('emptyList', () {
       var arg = DirectoryArgument();
+      // ignore: unnecessary_type_check
       expect(arg.emptyList is List, true);
 
       // Make sure we can add a Directory type directly
