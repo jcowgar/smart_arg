@@ -25,11 +25,13 @@ class BooleanArgument extends Argument {
     dynamic long,
     String? help,
     bool isRequired = false,
+    String? environmentVariable,
   }) : super(
           short: short,
           long: long,
           help: help,
           isRequired: isRequired,
+          environmentVariable: environmentVariable,
         );
 
   @override
