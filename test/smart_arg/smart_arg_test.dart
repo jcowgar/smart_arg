@@ -284,6 +284,38 @@ class TestArgumentGroups extends SmartArg {
   int count = 1;
 }
 
+@SmartArg.reflectable
+mixin HelpMixin {
+  @HelpArgument()
+  bool? help;
+}
+
+@SmartArg.reflectable
+class BaseArg extends SmartArg with HelpMixin {
+  @IntegerArgument(help: 'A integer value, added via the BaseArg class')
+  int? baseValue;
+}
+
+@SmartArg.reflectable
+//Explicit `class` declaration keyword for tests. `mixin` keyword should be preferred
+class StringMixin {
+  @StringArgument(help: 'A string value, added via the StringMixin class')
+  String? stringValue;
+}
+
+@SmartArg.reflectable
+mixin DoubleMixin {
+  @DoubleArgument(help: 'A double value, added via the DoubleMixin class')
+  double? doubleValue;
+}
+
+@SmartArg.reflectable
+@Parser(exitOnFailure: false)
+class ChildExtension extends BaseArg with DoubleMixin, StringMixin {
+  @BooleanArgument(help: 'A boolean value, added via the ChildExtension class')
+  bool? childValue;
+}
+
 String? whatExecuted;
 
 void main() {
@@ -847,6 +879,50 @@ void main() {
       expect(help, contains('  Before personalization arguments'));
       expect(help, contains('  After personalization arguments'));
       expect(help, contains('CONFIGURATION'));
+    });
+  });
+
+  group('inherited and mixin parsing/assignment', () {
+    test('basic arguments', () {
+      final args = ChildExtension()
+        ..parse([
+          '--child-value', //
+          '--string-value', 'hello', //
+          '--double-value', '222.22', //
+          '--base-value', '321', //
+        ]);
+
+      expect(args.childValue, true);
+      expect(args.stringValue, 'hello');
+      expect(args.doubleValue, 222.22);
+      expect(args.baseValue, 321);
+      expect(args.help, null);
+    });
+
+    test('with deeply nested help', () {
+      final args = ChildExtension()
+        ..parse([
+          '--double-value', '222.22', //
+          '--base-value', '321', //
+          '--help'
+        ]);
+
+      expect(args.childValue, null);
+      expect(args.doubleValue, 222.22);
+      expect(args.baseValue, 321);
+      expect(args.help, true);
+    });
+
+    test('usage doc', () {
+      final args = ChildExtension();
+      final String help = args.usage();
+
+      expect(help,
+          contains('A boolean value, added via the ChildExtension class'));
+      expect(help, contains('A string value, added via the StringMixin class'));
+      expect(help, contains('A double value, added via the DoubleMixin class'));
+      expect(help, contains('A integer value, added via the BaseArg class'));
+      expect(help, contains('Show help'));
     });
   });
 }

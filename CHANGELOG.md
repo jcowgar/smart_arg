@@ -1,9 +1,14 @@
+## 2.1.0
+
+- Added:
+    - Support for SmartArg Argument inheritance defined in super classes or via mixins
+
 ## 2.0.0
 
 - Breaking:
     - Upgraded for Null Type Safety. Requires minimum Dart version `2.12.0`
     - Upgraded reflectable to `3.0.4`
-- Added
+- Added:
     - Extra methods to `SmartArg` for handling lifecycle operations. Useful for DI instantiation
         - `beforeCommandParse`
         - `beforeCommandExecute`

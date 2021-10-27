@@ -57,6 +57,28 @@ class SmartArg {
   /// system [Platform.environment] on unless provided otherwise.
   late Map<String, String> _environment = Platform.environment;
 
+  /// Recursively walks the [classMirror] and it's associated
+  /// [ClassMirror.superclass] (and subsequently declared [mixin]s) to find all
+  /// public [VariableMirror] declarations
+  List<DeclarationMirror> _walkDeclarations(ClassMirror classMirror) {
+    ClassMirror? superMirror;
+    try {
+      superMirror = classMirror.superclass;
+    } on NoSuchCapabilityError catch (_) {
+      // A NoSuchCapabilityError is thrown when the superclass not annotated
+      // with @SmartArg.reflectable
+    }
+    List<DeclarationMirror> mirrors = [];
+    if (_isNotNull(superMirror)) {
+      mirrors = _walkDeclarations(superMirror!);
+    }
+    var classVals = classMirror.declarations.values;
+    return [classVals, mirrors]
+        .expand((e) => e)
+        .where((p) => p is VariableMirror && _isFalse(p.isPrivate))
+        .toList();
+  }
+
   SmartArg() {
     final instanceMirror = reflectable.reflect(this);
 
@@ -72,9 +94,7 @@ class SmartArg {
 
     {
       Group? currentGroup;
-
-      for (final mirror in instanceMirror.type.declarations.values
-          .where((p) => p is VariableMirror && _isFalse(p.isPrivate))) {
+      for (final mirror in _walkDeclarations(instanceMirror.type)) {
         currentGroup =
             mirror.metadata.firstWhereOrNull((m) => m is Group) as Group? ??
                 currentGroup;
